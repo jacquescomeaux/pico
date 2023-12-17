@@ -1,1 +1,3 @@
-# Starting from scratch on a Raspberry Pi Pico for fun and profit
+# ARM assembly for fun and profit
+
+I'm starting over.
