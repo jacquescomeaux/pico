@@ -2,10 +2,6 @@
 .cpu cortex-m0plus
 .thumb
 
-.equ RESETS_BASE,     0x4000c000
-.equ RESET_OFST,      0x0
-.equ RESET_DONE_OFST, 0x8
-
 .equ IO_BANK0_BASE,   0x40014000
 .equ GPIO25_STATUS,   (IO_BANK0_BASE + 0x0c8)
 .equ GPIO25_CTRL,     (IO_BANK0_BASE + 0x0cc)
@@ -16,43 +12,21 @@
 
 .equ ATOMIC_CLEAR,    0x3000
 
-.type main, %function
-.global main
-main:
+.type blink, %function
+.global blink
 
-  // Deassert GPIO reset
-  ldr r1, =(RESETS_BASE + ATOMIC_CLEAR)
-  movs r0, 0x20                           // IO_BANK0 is bit 5
-  str r0, [r1, RESET_OFST]
-
-  // Wait for GPIO reset to finish
-  ldr r1, =RESETS_BASE
-1:
-  ldr r2, [r1, RESET_DONE_OFST]
-  tst r0, r2
-  beq 1b
-
-  // Set GPIO25 function to SIO
+blink:
   ldr r1, =GPIO25_CTRL
-  movs r0, #5
-  str r0, [r1, #0]
-
+  movs r0, 5 // SIO function = 5
+  str r0, [r1, 0]
   ldr r1, =SIO_BASE
-
-  // Set output enable for GPIO 25
-  movs r0, #1
-  lsls r0, r0, #25
+  movs r0, 1
+  lsls r0, r0, 25 // GPIO 25 (LED) output enable
   str r0, [r1, GPIO_OE_SET_OFST]
-
-loop:
-
-  // Toggle output level for GPIO 25
-  str r0, [r1, GPIO_OUT_XOR_OFST]
-
-  // Delay
-  ldr r2, =400000
-1:
-  subs r2, r2, #1
-  bne 1b
-
-  b loop
+toggle_one_second:
+  str r0, [r1, GPIO_OUT_XOR_OFST] // toggle GPIO 25 output level
+  ldr r2, =0x1fca055 // 33.3 * 10^6 (one-third of a second at 100MHz)
+1: // 3 clock cycle loop
+  subs r2, r2, 1 // 1 clock cycle
+  bne 1b // 2 clock cycles when taken
+  b toggle_one_second

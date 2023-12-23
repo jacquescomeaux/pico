@@ -2,19 +2,16 @@ all: build
 
 build: blink.uf2
 
-# convert ELF file to UF2 file
 blink.uf2: blink.elf
-	elf2uf2 blink.elf blink.uf2
+	./elf2uf2 blink.elf blink.uf2
 
-# compile
-blink.elf: blink.o
-	arm-none-eabi-ld -T pico_ram_only.ld -o blink.elf blink.o
+objects = main.o blink.o clocks.o gpio.o pll.o xosc.o
 
-blink.o: blink.s
-	arm-none-eabi-as -o blink.o blink.s
+blink.elf: $(objects)
+	arm-none-eabi-ld -T pico_ram_only.ld -o blink.elf $(objects)
 
-# flash: build/blink.uf2
-# 	cp build/blink.uf2 /Volumes/RPI-RP2
+$(objects): %.o: %.s
+	arm-none-eabi-as -o $@ $<
 
 clean:
-	rm blink.elf blink.uf2 blink.o
+	rm blink.elf blink.uf2 *.o
