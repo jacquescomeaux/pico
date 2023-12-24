@@ -15,4 +15,4 @@ setup_clocks:
   str r0, [r1, CLK_REF_CTRL_OFST]
   movs r0, 1 // use auxsrc (default pll_sys, =0x1) as clk_sys source
   str r0, [r1, CLK_SYS_CTRL_OFST]
-  mov pc, lr
+  bx lr

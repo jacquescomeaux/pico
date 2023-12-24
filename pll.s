@@ -55,4 +55,4 @@ vco_lock:
   ldr r1, =(PLL_SYS_BASE + ATOMIC_CLEAR)
   movs r0, 0x8 // postdiv (bit 3)
   str r0, [r1, PWR_OFST]
-  mov pc, lr
+  bx lr

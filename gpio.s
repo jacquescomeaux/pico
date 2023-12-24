@@ -22,4 +22,4 @@ setup_gpio:
   tst r0, r2 // IO_BANK0 is still bit 5
   // wait for reset done
   beq 1b
-  mov pc, lr
+  bx lr

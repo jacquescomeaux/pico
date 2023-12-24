@@ -20,4 +20,4 @@ start_xosc:
   ldr r0, [r1, STATUS_OFST]
   lsrs r0, r0, 31 // poll status bit
   beq 1b
-  mov pc, lr
+  bx lr
