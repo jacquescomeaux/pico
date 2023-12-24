@@ -19,12 +19,22 @@
 .equ UARTLCR_H_OFST, 0x2c
 .equ UARTCR_OFST, 0x30
 
+.equ IO_BANK0_BASE, 0x40014000
+.equ GPIO0_CTRL_OFST, 0x04
+.equ GPIO1_CTRL_OFST, 0x0c
+
 .equ ATOMIC_CLEAR,    0x3000
 
 .type setup_uart, %function
 .global setup_uart
 
 setup_uart:
+
+  // Configure GPIO 0 and 1 as UART0
+  ldr r1, =IO_BANK0_BASE
+  movs r0, 2 // UART function = 2
+  str r0, [r1, GPIO0_CTRL_OFST]
+  str r0, [r1, GPIO1_CTRL_OFST]
 
   // Deassert the reset
   ldr r1, =(RESETS_BASE + ATOMIC_CLEAR)
