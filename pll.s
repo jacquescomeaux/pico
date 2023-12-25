@@ -63,6 +63,16 @@ vco_lock:
 delay_1s:
   ldr r3, =0x1fca055 // 33.3 * 10^6 (one-third of a second at 100MHz)
 1: // 3 clock cycle loop
-  subs r3, r3, 1 // 1 clock cycle
+  subs r3, 1 // 1 clock cycle
   bne 1b // 2 clock cycles when taken
-  mov pc, lr
+  bx lr
+
+.type delay_quick, %function
+.global delay_quick
+
+delay_quick:
+  ldr r3, =0x65b9ab
+1:
+  subs r3, 1
+  bne 1b
+  bx lr

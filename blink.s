@@ -29,6 +29,7 @@ setup_led:
 .global blink
 
 blink:
+  ldr r1, =SIO_BASE
   movs r0, 1
   lsls r0, 25
 1:
@@ -36,21 +37,55 @@ blink:
   bl delay_1s
   b 1b
 
+.type long_blink, %function
+.global long_blink
+
+long_blink:
+  push {lr}
+  ldr r1, =SIO_BASE
+  movs r0, 1
+  lsls r0, 25
+  bl delay_1s
+  str r0, [r1, GPIO_OUT_XOR_OFST]
+  bl delay_1s
+  str r0, [r1, GPIO_OUT_XOR_OFST]
+  bl delay_1s
+  pop {pc}
+
 .type blinkN, %function
 .global blinkN
 
 blinkN:
   push {lr}
+  ldr r1, =SIO_BASE
   movs r2, 1
   lsls r2, 25
   tst r0, r0
   beq done
 on_then_off:
   str r2, [r1, GPIO_OUT_XOR_OFST]
-  bl delay_1s
+  bl delay_quick
   str r2, [r1, GPIO_OUT_XOR_OFST]
-  bl delay_1s
+  bl delay_quick
   subs r0, r0, 1
   bne on_then_off
 done:
+  pop {pc}
+
+.type blink_hex, %function
+.global blink_hex
+
+blink_hex:
+  push {lr}
+  movs r4, r0
+  movs r5, 0xf
+1:
+  ands r0, r5
+  bl blinkN
+  lsrs r4, 4
+  beq 2f
+  bl long_blink
+  movs r0, r4
+  b 1b
+2:
   pop {pc}
