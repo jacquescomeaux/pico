@@ -10,4 +10,8 @@ main:
   bl start_pll
   bl setup_clocks
   bl setup_gpio
-  b blink
+  bl setup_led
+  movs r0, 3
+  bl blinkN
+stop:
+  b stop

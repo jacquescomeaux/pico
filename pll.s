@@ -56,3 +56,13 @@ vco_lock:
   movs r0, 0x8 // postdiv (bit 3)
   str r0, [r1, PWR_OFST]
   bx lr
+
+.type delay_1s, %function
+.global delay_1s
+
+delay_1s:
+  ldr r3, =0x1fca055 // 33.3 * 10^6 (one-third of a second at 100MHz)
+1: // 3 clock cycle loop
+  subs r3, r3, 1 // 1 clock cycle
+  bne 1b // 2 clock cycles when taken
+  mov pc, lr

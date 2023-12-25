@@ -12,10 +12,10 @@
 
 .equ ATOMIC_CLEAR,    0x3000
 
-.type blink, %function
-.global blink
+.type setup_led, %function
+.global setup_led
 
-blink:
+setup_led:
   ldr r1, =GPIO25_CTRL
   movs r0, 5 // SIO function = 5
   str r0, [r1, 0]
@@ -23,10 +23,34 @@ blink:
   movs r0, 1
   lsls r0, r0, 25 // GPIO 25 (LED) output enable
   str r0, [r1, GPIO_OE_SET_OFST]
-toggle_one_second:
-  str r0, [r1, GPIO_OUT_XOR_OFST] // toggle GPIO 25 output level
-  ldr r2, =0x1fca055 // 33.3 * 10^6 (one-third of a second at 100MHz)
-1: // 3 clock cycle loop
-  subs r2, r2, 1 // 1 clock cycle
-  bne 1b // 2 clock cycles when taken
-  b toggle_one_second
+  bx lr
+
+.type blink, %function
+.global blink
+
+blink:
+  movs r0, 1
+  lsls r0, 25
+1:
+  str r0, [r1, GPIO_OUT_XOR_OFST]
+  bl delay_1s
+  b 1b
+
+.type blinkN, %function
+.global blinkN
+
+blinkN:
+  push {lr}
+  movs r2, 1
+  lsls r2, 25
+  tst r0, r0
+  beq done
+on_then_off:
+  str r2, [r1, GPIO_OUT_XOR_OFST]
+  bl delay_1s
+  str r2, [r1, GPIO_OUT_XOR_OFST]
+  bl delay_1s
+  subs r0, r0, 1
+  bne on_then_off
+done:
+  pop {pc}
