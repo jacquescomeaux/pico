@@ -11,7 +11,4 @@ main:
   bl setup_clocks
   bl setup_gpio
   bl setup_led
-  movs r0, 3
-  bl blinkN
-stop:
-  b stop
+  b led_on

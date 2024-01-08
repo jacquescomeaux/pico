@@ -7,8 +7,9 @@
 .equ GPIO25_CTRL,     (IO_BANK0_BASE + 0x0cc)
 
 .equ SIO_BASE,          0xd0000000
-.equ GPIO_OE_SET_OFST,  0x024
+.equ GPIO_OUT_SET_OFST, 0x014
 .equ GPIO_OUT_XOR_OFST, 0x01c
+.equ GPIO_OE_SET_OFST,  0x024
 
 .equ ATOMIC_CLEAR,    0x3000
 
@@ -24,6 +25,17 @@ setup_led:
   lsls r0, r0, 25 // GPIO 25 (LED) output enable
   str r0, [r1, GPIO_OE_SET_OFST]
   bx lr
+
+.type led_on, %function
+.global led_on
+
+led_on:
+  ldr r1, =SIO_BASE
+  movs r0, 1
+  lsls r0, 25
+  str r0, [r1, GPIO_OUT_SET_OFST]
+1:
+  b 1b
 
 .type blink, %function
 .global blink
