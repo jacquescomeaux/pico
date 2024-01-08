@@ -23,6 +23,7 @@
 .equ GPIO0_CTRL_OFST, 0x04
 .equ GPIO1_CTRL_OFST, 0x0c
 
+.equ ATOMIC_SET,    0x2000
 .equ ATOMIC_CLEAR,    0x3000
 
 .type setup_uart, %function
@@ -30,27 +31,39 @@
 
 setup_uart:
 
+  // Enable clk_peri
+  movs r0, 0x1 // set enable bit (0x1 << 11)
+  lsls r0, 11
+  movs r1, 0x4 // use xosc (=0x4 << 5) as clk_ref source
+  lsls r1, 5
+  orrs r0, r1
+  ldr r1, =CLOCKS_BASE
+  str r0, [r1, CLK_PERI_CTRL_OFST]
+
+  // Reset UART0
+  movs r0, 1
+  lsls r0, r0, 22 // UART0 is bit 22
+
+  // Assert the reset
+  ldr r1, =(RESETS_BASE + ATOMIC_SET)
+  str r0, [r1, RESET_OFST]
+
+  // Deassert the reset
+  ldr r1, =(RESETS_BASE + ATOMIC_CLEAR)
+  str r0, [r1, RESET_OFST]
+
+  // Check if reset done
+  ldr r1, =RESETS_BASE
+1:
+  ldr r2, [r1, RESET_DONE_OFST]
+  tst r0, r2
+  beq 1b
+
   // Configure GPIO 0 and 1 as UART0
   ldr r1, =IO_BANK0_BASE
   movs r0, 2 // UART function = 2
   str r0, [r1, GPIO0_CTRL_OFST]
   str r0, [r1, GPIO1_CTRL_OFST]
-
-  // Deassert the reset
-  ldr r1, =(RESETS_BASE + ATOMIC_CLEAR)
-  movs r0, 1
-  lsls r0, 22 // UART0 is bit 22
-  str r0, [r1, RESET_OFST]
-  ldr r1, =RESETS_BASE
-1:
-  ldr r2, [r1, RESET_DONE_OFST]
-  tst r0, r2 
-  beq 1b
-
-  // Enable clk_peri
-  ldr r1, =CLOCKS_BASE
-  movs r0, 0x80 // use xosc (=0x4 << 5) as clk_ref source
-  str r0, [r1, CLK_PERI_CTRL_OFST]
 
   // Set the baud rate divisors
   movs r0, 6 // integer baud rate = 6
@@ -64,15 +77,18 @@ setup_uart:
 
   // Set enable bits in the control register
   ldr r1, =UART0_BASE
-  movs r0, 0x3 
+  movs r0, 0x3
   lsls r0, 8 // set bits 8 and 9 (TX and RX enable)
   adds r0, 0x1 // set bit 0 (UART enable)
   str r0, [r1, UARTCR_OFST]
 
   bx lr
 
+.type uart_send, %function
+.global uart_send
+
 uart_send:
-  ldr r1, =UART0_BASE 
+  ldr r1, =UART0_BASE
 poll_TXFF:
   ldr r2, [r1, UARTFR_OFST]
   movs r3, 0x20 // bit 5 (TX FIFO full)
@@ -83,8 +99,11 @@ poll_TXFF:
   str r0, [r1, UARTDR_OFST]
   bx lr
 
+.type uart_recv, %function
+.global uart_recv
+
 uart_recv:
-  ldr r1, =UART0_BASE 
+  ldr r1, =UART0_BASE
 poll_RXFE:
   ldr r2, [r1, UARTFR_OFST]
   movs r3, 0x10 // bit 4 (RX FIFO empty)
