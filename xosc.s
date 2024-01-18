@@ -18,6 +18,6 @@ start_xosc:
   str r0, [r1, CTRL_OFST]
 1:
   ldr r0, [r1, STATUS_OFST]
-  lsrs r0, r0, 31 // poll status bit
+  lsrs r0, 31 // stable bit
   beq 1b
   bx lr

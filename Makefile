@@ -1,17 +1,17 @@
 all: build
 
-build: blink.uf2
+build: echo.uf2
 
-blink.uf2: blink.elf
-	./elf2uf2 blink.elf blink.uf2
+echo.uf2: echo.elf
+	./elf2uf2 echo.elf echo.uf2
 
-objects = main.o blink.o clocks.o gpio.o pll.o uart.o xosc.o
+objects = main.o xosc.o clocks.o gpio.o uart.o
 
-blink.elf: $(objects)
-	arm-none-eabi-ld -T pico_ram_only.ld -o blink.elf $(objects)
+echo.elf: $(objects)
+	arm-none-eabi-ld -T pico_ram_only.ld -o echo.elf $(objects)
 
 $(objects): %.o: %.s
 	arm-none-eabi-as -o $@ $<
 
 clean:
-	rm blink.elf blink.uf2 *.o
+	rm echo.elf echo.uf2 *.o

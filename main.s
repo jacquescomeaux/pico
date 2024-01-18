@@ -7,8 +7,10 @@
 
 main:
   bl start_xosc
-  bl start_pll
   bl setup_clocks
   bl setup_gpio
-  bl setup_led
-  b led_on
+  bl setup_uart
+1:
+  bl uart_recv
+  bl uart_send
+  b 1b
