@@ -37,9 +37,9 @@ start_pll:
   // set pl_sys post dividers to 12 (6 * 2)
   ldr r1, =PLL_SYS_BASE
   movs r0, 6 // POSTDIV1 = 6
-  lsls r0, r0, 4
-  adds r0, r0, 2 // POSTDIV2 = 2
-  lsls r0, r0, 12
+  lsls r0, 4
+  adds r0, 2 // POSTDIV2 = 2
+  lsls r0, 12
   str r0, [r1, PRIM_OFST]
   // turn on main power and VCO
   ldr r1, =(PLL_SYS_BASE + ATOMIC_CLEAR)
@@ -49,7 +49,7 @@ start_pll:
   ldr r1, =PLL_SYS_BASE
 vco_lock:
   ldr r2, [r1, CS_OFST]
-  lsrs r2, r2, 31
+  lsrs r2, 31
   beq vco_lock
   // turn on post divider power
   ldr r1, =(PLL_SYS_BASE + ATOMIC_CLEAR)

@@ -3,7 +3,7 @@ all: build
 build: echo.uf2
 
 echo.uf2: echo.elf
-	./elf2uf2 echo.elf echo.uf2
+	../elf/elf2uf2 echo.elf echo.uf2
 
 objects = main.o xosc.o clocks.o gpio.o uart.o
 

@@ -22,7 +22,7 @@ setup_led:
   str r0, [r1, 0]
   ldr r1, =SIO_BASE
   movs r0, 1
-  lsls r0, r0, 25 // GPIO 25 (LED) output enable
+  lsls r0, 25 // GPIO 25 (LED) output enable
   str r0, [r1, GPIO_OE_SET_OFST]
   bx lr
 
@@ -79,7 +79,7 @@ on_then_off:
   bl delay_quick
   str r2, [r1, GPIO_OUT_XOR_OFST]
   bl delay_quick
-  subs r0, r0, 1
+  subs r0, 1
   bne on_then_off
 done:
   pop {pc}

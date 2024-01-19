@@ -12,7 +12,7 @@
 
 start_xosc:
   ldr r1, =XOSC_BASE
-  movs r0, 47 // startup delay = 47 for 12Mhz crystal
+  movs r0, 47 // startup delay for 12Mhz crystal
   str r0, [r1, STARTUP_OFST]
   ldr r0, =0x00fabaa0 // enable
   str r0, [r1, CTRL_OFST]
