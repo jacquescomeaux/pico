@@ -15,3 +15,7 @@ $(objects): %.o: %.s
 
 clean:
 	rm echo.elf echo.uf2 *.o
+
+flash: echo.uf2
+	[ -h /dev/disk/by-label/RPI-RP2 ] || sleep 2s
+	cat echo.uf2 > /dev/disk/by-label/RPI-RP2
