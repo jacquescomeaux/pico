@@ -1,0 +1,35 @@
+Clobber
+R0: arg1, uart result
+R1: arg2
+R2:
+R3: shift_amount
+-------------
+Save
+R4: octal result, register result
+R5: word under construction
+R6: parse instructions
+R8:
+R9: end_char
+
+1yyyxxxx Imm         yyy = shift amount xxxx = bit-width
+00000001 Brackets
+0011yyyy Reg        yyyy = shift amount
+0100yyyy Reg
+
+MOVS 0x 00 00 88 38
+ADDS 0x 00 00 88 38
+SUBS 0x 00 00 88 38
+CMP  0x 00 00 33 30
+ANDS 0x 00 00 33 30
+ORRS 0x 00 00 33 30
+TST  0x 00 00 33 30
+LSLS 0x 00 E5 33 30
+LSRS 0x 00 E5 33 30
+RORS 0x 00 00 33 30
+LDR  0x E5 33 01 30
+LDRB 0x 36 33 01 30
+STR  0x E5 33 01 30
+STRB 0x 36 33 01 30
+B<c> 0x 00 00 00 88
+B    0x 00 00 00 8B
+BX   0x 00 00 00 43
