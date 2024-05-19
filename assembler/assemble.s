@@ -1,71 +1,100 @@
+.syntax unified
+.cpu cortex-m0plus
+.thumb
+
+.type assemble, %function
+.global assemble
+
+// TODO:
+// - implement opcode parser
+// - test each instruction (do this later -- much easier)
+// - test 4-bit reg instructions
+// - test BEQ overlaps
+// - decide on additional push or pops
+
 assemble:
-  BL receive_op
-  LDR R5, =0x20002000 // opcode table
-  LDR R1, =0x20001000 // opcode buffer base addr
-loop:
-  LDR R0, [R5, 0]     // load the string addr
-  BL string_compare
-  BEQ match
-  ADDS R5, 8          // next row of table
-  LDR R0, =0x20002080 // opcode table end
-  CMP R5, R0
-  BLO loop            // Keep going if lower than end
-  B redo_line         // redo line if opcode was not found
-match:
-  LDR R6, [R5, 4]     // load the parse instructions
+  // LDR R3, [SP, 20]
+  MOVS R6, 0
+  LDR R7, =0x00C8E893
+  // LDR R7, =0xE0E3A588
+  MOVS R0, ' 
+  MOV R8, R0
 main_loop:
-  MOVS R0, 0xFF   // lsb mask
-  ANDS R0, R6     // store in R0
-  MOVS R1, 0x80   // bit 7 mask
-  TST R0, R1      // compare (AND) to R0 byte
-  BNE handle_imm  // if IMM (== 1)
-  LSRS R0, 4      // R0 hold 3 or 4 (or 0)
-  BEQ handle_brackets // if BRACKETS (== 0)
-handle_reg:
-  BL register    // result is put in R4
-  MOVS R0, 0x0F  // lower nibble mask
-  ANDS R0, R6    // store shift amount in R0
-  LSLS R4, R0    // shift the result by the shift amount
-  ORRS R5, R4    // OR the register code into the word under construction
+  LSRS R0, R7, 8    // just peek
+  BNE skip          // if more stuff then skip
+  MOVS R0, '\r
+  MOV R8, R0        //set end char to carriage return
+skip:
+  // MOVS R0, 0xFF     // lsb mask
+  // ANDS R0, R7       // store in R0
+  UXTB R0, R7       // store lsb in R0
+  LSRS R1, R0, 4    // upper nibble
+  CMP R1, 0xC       // if 0xxxxxxx or 10xxxxxx
+  BLO opcode
+  CMP R1, 0xE       // if 110xyyyy
+  BLO handle_imm
+handle_reg:         // if 111xyyyy
+  MOVS R1, (1<<4)   // bit 4 mask
+  ANDS R0, R1       // get bit 4
+  ADDS R0, 3        // add 3 to it (now 3 or 4)
+  BL register       // result is put in R4
+  MOVS R0, 0x0F     // lower nibble mask
+  ANDS R0, R7       // store shift amount in R0
+  LSLS R4, R0       // shift the result by the shift amount
+  ORRS R6, R4       // OR the register code into the word under construction
   B done_stuff
+opcode:
+  MOVS R2, 9        // shift amount for 7-bit opcode
+  MOVS R1, (1<<7)   // bit 7 mask
+  TST R0, R1        // check bit 7
+  BEQ fin           // if zero done
+  BICS R0, R1       // clear bit 7
+  MOVS R2, 11       // shift amount for 5-bit opcode high
+  MOVS R1, (1<<5)   // bit 5 mask
+  TST R0, R1        // check bit 5
+  BEQ fin           // if zero done
+  BICS R0, R1       // clear bit 5
+  MOVS R2, 6        // shift amount for 5-bit opcode low
+fin:
+  LSLS R0, R2
+  ORRS R6, R0
+  B here
 handle_imm:
   MOVS R1, 0x0F  // lower nibble mask
   ANDS R0, R1    // store immediate width in R0
   BL octal       // result is put in R4
-  MOVS R0, 0x7F  // least significant 7 bits mask
-  ANDS R0, R6    // store ls 7 bits in R0
-  LSRS R0, 4     // shift right to get shift amount
+  LSLS R0, R7, 27
+  LSRS R0, 31
+  MOVS R2, 6
+  MULS R0, R2    // R0 has shift amount (0 or 6)
   LSLS R4, R0    // shift the result by the shift amount
+  ORRS R6, R4    // OR the immediate into the word under construction
 done_stuff:
-  LSRS R6, 0x8 // get next parse instruction
-  BEQ done     // if it's zero there are no more things to parse
-  MOVS R0, 0   // copy the end_char into R0
-  ORRS R0, R9
-  BL uart_send // echo the comma (or bracket)
-10:
-  BL get_char
-  MOVS R1, '  // space char
-  CMP R0, R1
-  BNE 10b // keep trying if not space
-  BL uart_send // echo the space
-  B main_loop
-handle_brackets:
-  BL get_char    // char in R0
-  MOVS R1, '[    // open bracket
-  CMP R0, R1
-  BNE handle_brackets // keep trying if not bracket
-  BL uart_send   // echo bracket
-  MOVS R8, 1     // 1 means we are now in brackets
-  LSRS R6, 0x8   // get next parse instruction
-  BNE main_loop
+  MOV R0, R8     // copy the end_char into R0
+  BL uart_send   // echo the space (or carriage return)
+here:
+  LSRS R7, 0x8   // get next parse instruction
+  BNE main_loop  // if it's nonzero there are more things to parse
 done:
-  TST R8, R8 // R8 == whether we are in bracket or not
-  BEQ no_brackets
-  MOVS R0, ']  // echo bracket
-  BL uart_send
-no_bracket:
-  MOVS R0, '\r  // send carriage return
-  BL uart_send
   MOVS R0, '\n  // send newline
   BL uart_send
-  B next_instr
+  MOVS R0, R6
+  BL send_hex
+  B assemble
+
+.type get_char, %function
+.global get_char
+
+// R8: end_char
+get_char:
+  PUSH {LR}
+  BL uart_recv
+  CMP R0, 025 // ^U (NAK)
+  BEQ redo_line
+  // CMP R0, 004 // ^D (EOT)
+  // BEQ done_for_real
+  CMP R0, R8
+  POP {PC}
+redo_line:
+  POP {R0}
+  B done

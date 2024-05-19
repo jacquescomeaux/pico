@@ -1,0 +1,233 @@
+Clobber
+R0: arg1, uart result
+R1: arg2
+R2:
+R3: shift_amount
+-------------
+Save
+R4: octal result, register result
+R5: second-level (octal or register) scratch
+R6: word under construction
+R7: parse instructions
+R8: end_char
+R8:
+R9:
+R10:
+R11:
+R12:
+
+Encoding
+
+start with all 0
+
+0xxxxxxx // 7-bit field xxxxxxx at [15:9] (non zero)
+100xxxxx // 5-bit field xxxxx at [15:11]
+101xxxxx // 5-bit field xxxxx at [10:6]
+1100yyyy // octal immediate with shift amount 0 and bit-width yyyy
+1101yyyy // octal immediate with shift amount 6 and bit-width yyyy
+1110yyyy // 3-bit reg with shift amount yyyy
+1111yyyy // 4-bit reg with shift amount yyyy (excluding yyyy=1111=15)
+
+ADCS (register)     T1  01000 00101 Rm Rdn    E3 E0 A5 88
+ADDSI3 (immediate)  T1  0001110 imm3 Rn Rd    D3 E3 E0 0E
+ADDSI8 (immediate)  T2  00110 Rdn imm8        00 C8 E3 86
+ADDSR (register)    T1  0001100 Rm Rn Rd      E6 E3 E0 0C
+ADDRHI (register)   T2  010001001 Rm4 Rdn     F3 E0 B2 88     TODO (dn + 8)
+ADDRLO (register)   T2  010001000 Rm4 Rdn     F3 E0 B0 88
+ADR                 T1  10100 Rd imm8         00 C8 E3 94
+ANDS (register)     T1  01000 00000 Rm Rdn    E3 E0 A0 88
+ASRSI (immediate)   T1  00010 imm5 Rm Rd      D5 E3 E0 82
+ASRSR (register)    T1  01000 00100 Rm Rdn    E3 E0 A4 88
+BEQ                 T1  11010 000 imm8        00 C8 A0 9A     TODO overlap
+BNE                 T1  11010 001 imm8        00 C8 A4 9A
+BHS                 T1  11010 010 imm8        00 C8 A8 9A
+BLO                 T1  11010 011 imm8        00 C8 AC 9A
+BMI                 T1  11010 100 imm8        00 C8 B0 9A
+BPL                 T1  11010 101 imm8        00 C8 B4 9A
+BVS                 T1  11010 110 imm8        00 C8 B8 9A
+BVC                 T1  11010 111 imm8        00 C8 BC 9A
+BHI                 T1  11011 000 imm8        00 C8 A0 9B
+BLS                 T1  11011 001 imm8        00 C8 A4 9B
+BGE                 T1  11011 010 imm8        00 C8 A8 9B
+BLT                 T1  11011 011 imm8        00 C8 AC 9B
+BGT                 T1  11011 100 imm8        00 C8 B0 9B
+BLE                 T1  11011 101 imm8        00 C8 B4 9B
+B                   T2  11100 imm11           00 00 CB 9C
+BICS (register)     T1  01000 01110 Rm Rdn    E3 E0 AE 88
+BLHI                T1  11110 imm11           00 00 CB 9E
+BLLO                T1  11111 imm11           00 00 CB 9F
+BLX                 T1  01000 1111 Rm 000     00 E3 BE 88
+BX                  T1  01000 1110 Rm 000     00 E3 BC 88
+CMN (register)      T1  01000 01011 Rm Rn     E3 E0 AB 88
+CMPI (immediate)    T1  00101 Rn imm8         00 C8 E8 85
+CMPR (register)     T1  01000 01010 Rm Rn     E3 E0 AA 88
+CMPRHI (register)   T2  010001011 Rm4 Rd      F3 E0 B6 88      TODO (d + 8)
+CMPRLO (register)   T2  010001010 Rm4 Rd      F3 E0 B4 88 
+EORS (register)     T1  01000 00001 Rm Rdn    E3 E0 A1 88
+LDRI5 (immediate)   T1  01101 imm5 Rn Rt      D5 E3 E0 8D
+LDRI8 (immediate)   T2  10011 Rt imm8         00 C8 E8 93
+LDRL (literal)      T1  01001 Rt imm8         00 C8 E8 89
+LDRR (register)     T1  0101100 Rm Rn Rt      E6 E3 E0 2C
+LDRBI (immediate)   T1  01111 imm5 Rn Rt      D5 E3 E0 8F
+LDRBR (register)    T1  0101110 Rm Rn Rt      E6 E3 E0 2E
+LDRHI (immediate)   T1  10001 imm5 Rn Rt      D5 E3 E0 91
+LDRHR (register)    T1  0101101 Rm Rn Rt      E6 E3 E0 2D
+LDRSB (register)    T1  0101011 Rm Rn Rt      E6 E3 E0 2B
+LDRSH (register)    T1  0101111 Rm Rn Rt      E6 E3 E0 2F
+LSLSI (immediate)   T1  00000 imm5 Rm Rd      D5 E3 E0 80
+LSLSR (register)    T1  01000 00010 Rm Rdn    E3 E0 A2 88
+LSRSI (immediate)   T1  00001 imm5 Rm Rd      D5 E3 E0 81
+LSRSR (register)    T1  01000 00011 Rm Rdn    E3 E0 A3 88
+MOVSI (immediate)   T1  00100 Rd imm8         00 C8 E8 84
+MOVRHI (register)   T1  010001101 Rm4 Rd      F3 E0 BA 88     TODO (d + 8)
+MOVRLO (register)   T1  010001100 Rm4 Rd      F3 E0 B8 88
+MOVSR (register)    T2  00000 00000 Rm Rd     E3 E0 A0 80
+MULS                T1  01000 01101 Rn Rdm    E3 E0 AD 88
+MVNS (register)     T1  01000 01111 Rm Rd     E3 E0 AF 88
+ORRS (register)     T1  01000 01100 Rm Rdn    E3 E0 AC 88
+PUSHLR              T1  10110 10100 000000    00 00 B4 96     TODO nothing to do
+POPPC               T1  10111 10100 000000    00 00 B4 97
+REV                 T1  10111 01000 Rm Rd     E3 E0 A8 97
+REV16               T1  10111 01001 Rm Rd     E3 E0 A9 97
+REVSH               T1  10111 01011 Rm Rd     E3 E0 AB 97
+RORS (register)     T1  01000 00111 Rm Rdn    E3 E0 A7 88
+NEG (immediate)     T1  01000 01001 Rn Rd     E3 E0 A9 88     TODO it's negate
+SBCS (register)     T1  01000 00110 Rm Rdn    E3 E0 A6 88
+STRI5 (immediate)   T1  01100 imm5 Rn Rt      D5 E3 E0 8C
+STRI8 (immediate)   T2  10010 Rt imm8         00 C8 E8 92
+STRR (register)     T1  0101000 Rm Rn Rt      E6 E3 E0 28
+STRBI (immediate)   T1  01110 imm5 Rn Rt      D5 E3 E0 8E
+STRBR (register)    T1  0101010 Rm Rn Rt      E6 E3 E0 2A
+STRHI (immediate)   T1  10000 imm5 Rn Rt      D5 E3 E0 90
+STRHR (register)    T1  0101001 Rm Rn Rt      E6 E3 E0 29
+SUBSI3 (immediate)  T1  0001111 imm3 Rn Rd    D3 E3 E0 0F
+SUBSI8 (immediate)  T2  00111 Rdn imm8        00 C8 E8 87
+SUBSR (register)    T1  0001101 Rm Rn Rd      E6 E3 E0 0D
+SVC                 T1  11011 111 imm8        00 C8 BC 9B
+SXTB                T1  10110 01001 Rm Rd     E3 E0 A9 96
+SXTH                T1  10110 01000 Rm Rd     E3 E0 A8 96
+TST (register)      T1  01000 01000 Rm Rd     E3 E0 A8 88
+UXTB                T1  10110 01011 Rm Rd     E3 E0 AB 96
+UXTH                T1  10110 01010 Rm Rd     E3 E0 AA 96
+
+A for ARITHMETIC 
+B for BITWISE
+C for COMPARE
+D for DUPLICATE
+J for JUMP
+L for LOAD
+P for PUSH or POP
+R for ROTATE or REVERSE
+S for STORE
+T for TRANSLATE
+
+A for ARITHMETIC 
+ 
+AAC     ADCS (register)     T1  01000 00101 Rm Rdn    E3 E0 A5 88
+AAI3    ADDSI3 (immediate)  T1  0001110 imm3 Rn Rd    D3 E3 E0 0E
+AAI8    ADDSI8 (immediate)  T2  00110 Rdn imm8        00 C8 E3 86
+AARF    ADDSR (register)    T1  0001100 Rm Rn Rd      E6 E3 E0 0C
+AARH    ADDRHI (register)   T2  010001001 Rm4 Rdn     F3 E0 B2 88
+AARL    ADDRLO (register)   T2  010001000 Rm4 Rdn     F3 E0 B0 88
+AAA     ADR                 T1  10100 Rd imm8         00 C8 E3 94
+ASC     SBCS (register)     T1  01000 00110 Rm Rdn    E3 E0 A6 88
+ASI3    SUBSI3 (immediate)  T1  0001111 imm3 Rn Rd    D3 E3 E0 0F
+ASI8    SUBSI8 (immediate)  T2  00111 Rdn imm8        00 C8 E8 87
+ASR     SUBSR (register)    T1  0001101 Rm Rn Rd      E6 E3 E0 0D
+AHI     SRSI (immediate)    T1  00010 imm5 Rm Rd      D5 E3 E0 82
+AHR     SRSR (register)     T1  01000 00100 Rm Rdn    E3 E0 A4 88
+AM      MULS                T1  01000 01101 Rn Rdm    E3 E0 AD 88
+AN      NEG (immediate)     T1  01000 01001 Rn Rd     E3 E0 A9 88
+
+J for JUMP
+
+JE      BEQ                 T1  11010 000 imm8        00 C8 A0 9A
+JN      BNE                 T1  11010 001 imm8        00 C8 A4 9A
+JHS     BHS                 T1  11010 010 imm8        00 C8 A8 9A
+JLO     BLO                 T1  11010 011 imm8        00 C8 AC 9A
+JM      BMI                 T1  11010 100 imm8        00 C8 B0 9A
+JP      BPL                 T1  11010 101 imm8        00 C8 B4 9A
+JVS     BVS                 T1  11010 110 imm8        00 C8 B8 9A
+JVC     BVC                 T1  11010 111 imm8        00 C8 BC 9A
+JHI     BHI                 T1  11011 000 imm8        00 C8 A0 9B
+JLS     BLS                 T1  11011 001 imm8        00 C8 A4 9B
+JGE     BGE                 T1  11011 010 imm8        00 C8 A8 9B
+JLT     BLT                 T1  11011 011 imm8        00 C8 AC 9B
+JGT     BGT                 T1  11011 100 imm8        00 C8 B0 9B
+JLE     BLE                 T1  11011 101 imm8        00 C8 B4 9B
+JA      B                   T2  11100 imm11           00 00 CB 9C
+JIH     BLHI                T1  11110 imm11           00 00 CB 9E
+JIL     BLLO                T1  11111 imm11           00 00 CB 9F
+JLR     BLX                 T1  01000 1111 Rm 000     00 E3 BE 88
+JR      BX                  T1  01000 1110 Rm 000     00 E3 BC 88
+JS      SVC                 T1  11011 111 imm8        00 C8 BC 9B
+
+C for COMPARE
+
+CN      CMN (register)      T1  01000 01011 Rm Rn     E3 E0 AB 88
+CI      CMPI (immediate)    T1  00101 Rn imm8         00 C8 E8 85
+CR3     CMPR (register)     T1  01000 01010 Rm Rn     E3 E0 AA 88
+CR4H    CMPRHI (register)   T2  010001011 Rm4 Rd      F3 E0 B6 88
+CR4L    CMPRLO (register)   T2  010001010 Rm4 Rd      F3 E0 B4 88 
+
+L for LOAD
+
+LI5     LDRI5 (immediate)   T1  01101 imm5 Rn Rt      D5 E3 E0 8D
+LI8     LDRI8 (immediate)   T2  10011 Rt imm8         00 C8 E8 93
+LL      LDRL (literal)      T1  01001 Rt imm8         00 C8 E8 89
+LR      LDRR (register)     T1  0101100 Rm Rn Rt      E6 E3 E0 2C
+LBI     LDRBI (immediate)   T1  01111 imm5 Rn Rt      D5 E3 E0 8F
+LBR     LDRBR (register)    T1  0101110 Rm Rn Rt      E6 E3 E0 2E
+LHI     LDRHI (immediate)   T1  10001 imm5 Rn Rt      D5 E3 E0 91
+LHR     LDRHR (register)    T1  0101101 Rm Rn Rt      E6 E3 E0 2D
+LSB     LDRSB (register)    T1  0101011 Rm Rn Rt      E6 E3 E0 2B
+LSH     LDRSH (register)    T1  0101111 Rm Rn Rt      E6 E3 E0 2F
+
+S for STORE
+
+SI5     STRI5 (immediate)   T1  01100 imm5 Rn Rt      D5 E3 E0 8C
+SI8     STRI8 (immediate)   T2  10010 Rt imm8         00 C8 E8 92
+SR      STRR (register)     T1  0101000 Rm Rn Rt      E6 E3 E0 28
+SBI     STRBI (immediate)   T1  01110 imm5 Rn Rt      D5 E3 E0 8E
+SBR     STRBR (register)    T1  0101010 Rm Rn Rt      E6 E3 E0 2A
+SHI     STRHI (immediate)   T1  10000 imm5 Rn Rt      D5 E3 E0 90
+SHR     STRHR (register)    T1  0101001 Rm Rn Rt      E6 E3 E0 29
+
+D for DUPLICATE
+
+DI      MOVSI (immediate)   T1  00100 Rd imm8         00 C8 E8 84
+DRH     MOVRHI (register)   T1  010001101 Rm4 Rd      F3 E0 BA 88
+DRL     MOVRLO (register)   T1  010001100 Rm4 Rd      F3 E0 B8 88
+DRF     MOVSR (register)    T2  00000 00000 Rm Rd     E3 E0 A0 80
+DSB     SXTB                T1  10110 01001 Rm Rd     E3 E0 A9 96
+DSH     SXTH                T1  10110 01000 Rm Rd     E3 E0 A8 96
+DUB     UXTB                T1  10110 01011 Rm Rd     E3 E0 AB 96
+DUH     UXTH                T1  10110 01010 Rm Rd     E3 E0 AA 96
+
+B for BITWISE
+
+BC      BICS (register)     T1  01000 01110 Rm Rdn    E3 E0 AE 88
+BA      ANDS (register)     T1  01000 00000 Rm Rdn    E3 E0 A0 88
+BX      EORS (register)     T1  01000 00001 Rm Rdn    E3 E0 A1 88
+BO      ORRS (register)     T1  01000 01100 Rm Rdn    E3 E0 AC 88
+BI      MVNS (register)     T1  01000 01111 Rm Rd     E3 E0 AF 88
+BT      TST (register)      T1  01000 01000 Rm Rd     E3 E0 A8 88
+
+T for TRANSLATE
+
+TLI     LSLSI (immediate)   T1  00000 imm5 Rm Rd      D5 E3 E0 80
+TLR     LSLSR (register)    T1  01000 00010 Rm Rdn    E3 E0 A2 88
+TRI     LSRSI (immediate)   T1  00001 imm5 Rm Rd      D5 E3 E0 81
+TRR     LSRSR (register)    T1  01000 00011 Rm Rdn    E3 E0 A3 88
+
+R for ROTATE or REVERSE
+
+RR      RORS (register)     T1  01000 00111 Rm Rdn    E3 E0 A7 88
+RBW     REV                 T1  10111 01000 Rm Rd     E3 E0 A8 97
+RBH     REV16               T1  10111 01001 Rm Rd     E3 E0 A9 97
+RBS     REVSH               T1  10111 01011 Rm Rd     E3 E0 AB 97
+
+P for PUSH or POP
+
+PL      PUSHLR              T1  10110 10100 000000    00 00 B4 96
+PP      POPPC               T1  10111 10100 000000    00 00 B4 97
