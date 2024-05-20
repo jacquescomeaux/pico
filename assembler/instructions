@@ -26,7 +26,7 @@ start with all 0
 1100yyyy // octal immediate with shift amount 0 and bit-width yyyy
 1101yyyy // octal immediate with shift amount 6 and bit-width yyyy
 1110yyyy // 3-bit reg with shift amount yyyy
-1111yyyy // 4-bit reg with shift amount yyyy (excluding yyyy=1111=15)
+1111yyyy // 4-bit reg with shift amount yyyy
 
 ADCS (register)     T1  01000 00101 Rm Rdn    E3 E0 A5 88
 ADDSI3 (immediate)  T1  0001110 imm3 Rn Rd    D3 E3 E0 0E

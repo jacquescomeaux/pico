@@ -6,31 +6,30 @@
 .global assemble
 
 // TODO:
-// - implement opcode parser
-// - test each instruction (do this later -- much easier)
-// - test 4-bit reg instructions
-// - test BEQ overlaps
+// - test each instruction
 // - decide on additional push or pops
+// - add data literal "instructions"
+// - redo_line is problematic
 
 assemble:
-  // LDR R3, [SP, 20]
+  PUSH {LR}
   MOVS R6, 0
-  LDR R7, =0x00C8E893
-  // LDR R7, =0xE0E3A588
   MOVS R0, ' 
   MOV R8, R0
+  BL opcode
+  MOV R0, R8
+  BL uart_send
+  MOVS R7, R4
 main_loop:
   LSRS R0, R7, 8    // just peek
   BNE skip          // if more stuff then skip
   MOVS R0, '\r
   MOV R8, R0        //set end char to carriage return
 skip:
-  // MOVS R0, 0xFF     // lsb mask
-  // ANDS R0, R7       // store in R0
   UXTB R0, R7       // store lsb in R0
   LSRS R1, R0, 4    // upper nibble
   CMP R1, 0xC       // if 0xxxxxxx or 10xxxxxx
-  BLO opcode
+  BLO handle_opcode
   CMP R1, 0xE       // if 110xyyyy
   BLO handle_imm
 handle_reg:         // if 111xyyyy
@@ -43,7 +42,7 @@ handle_reg:         // if 111xyyyy
   LSLS R4, R0       // shift the result by the shift amount
   ORRS R6, R4       // OR the register code into the word under construction
   B done_stuff
-opcode:
+handle_opcode:
   MOVS R2, 9        // shift amount for 7-bit opcode
   MOVS R1, (1<<7)   // bit 7 mask
   TST R0, R1        // check bit 7
@@ -78,9 +77,7 @@ here:
 done:
   MOVS R0, '\n  // send newline
   BL uart_send
-  MOVS R0, R6
-  BL send_hex
-  B assemble
+  POP {PC}
 
 .type get_char, %function
 .global get_char

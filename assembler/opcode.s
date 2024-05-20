@@ -47,29 +47,32 @@ first_time:
   LDRB R1, [R5, 1]  // load parse instruction vs offset byte
   TST R1, R1        // check if zero
   BNE get_match     // non-zero means it's an address
+get_end_char:
+  BL get_char
+  BNE get_end_char
   POP {PC}          // zero means it's a parse instruction
 
 .align 4
 
 start:
   .byte 'A, 0x01 ; .hword 0x0000 ; .word A
-  // .byte 'B, 0x00 ; .hword 0x0000 ; .word 0xE3E0AE88 // BICS (register)     T1  01000 01110 Rm Rdn
-  // .byte 'C, 0x00 ; .hword 0x0000 ; .word 0xE3E0AB88 // CMN (register)      T1  01000 01011 Rm Rn
-  // .byte 'D, 0x00 ; .hword 0x0000 ; .word 0x00C8E884 // MOVSI (immediate)   T1  00100 Rd imm8
-  // .byte 'J, 0x00 ; .hword 0x0000 ; .word 0x00C8A09A // BEQ                 T1  11010 000 imm8
-  // .byte 'L, 0x00 ; .hword 0x0000 ; .word 0xD5E3E08D // LDRI5 (immediate)   T1  01101 imm5 Rn Rt
-  // .byte 'P, 0x00 ; .hword 0x0000 ; .word 0x0000B496 // PUSHLR              T1  10110 10100 000000
-  // .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE3E0A788 // RORS (register)     T1  01000 00111 Rm Rdn
-  // .byte 'S, 0x00 ; .hword 0x0000 ; .word 0xD5E3E08C // STRI5 (immediate)   T1  01100 imm5 Rn Rt
-  // .byte 'T, 0x00 ; .hword 0x0000 ; .word 0xD5E3E080 // LSLSI (immediate)   T1  00000 imm5 Rm Rd
+  .byte 'B, 0x01 ; .hword 0x0000 ; .word B
+  .byte 'C, 0x01 ; .hword 0x0000 ; .word C
+  .byte 'D, 0x01 ; .hword 0x0000 ; .word D
+  .byte 'J, 0x01 ; .hword 0x0000 ; .word J
+  .byte 'L, 0x01 ; .hword 0x0000 ; .word L
+  .byte 'P, 0x01 ; .hword 0x0000 ; .word P
+  .byte 'R, 0x01 ; .hword 0x0000 ; .word R
+  .byte 'S, 0x01 ; .hword 0x0000 ; .word S
+  .byte 'T, 0x01 ; .hword 0x0000 ; .word T
   .word 0x00000000, 0x00000000
 
 A:
   .byte 'A, 0x01 ; .hword 0x0000 ; .word AA
-  // .byte 'H, 0x01 ; .hword 0x0000 ; .word AH
+  .byte 'H, 0x01 ; .hword 0x0000 ; .word AH
   .byte 'M, 0x00 ; .hword 0x0000 ; .word 0xE3E0AD88 // MULS                T1  01000 01101 Rn Rdm
   .byte 'N, 0x00 ; .hword 0x0000 ; .word 0xE3E0A988 // NEG (immediate)     T1  01000 01001 Rn Rd
-  // .byte 'S, 0x01 ; .hword 0x0000 ; .word AS
+  .byte 'S, 0x01 ; .hword 0x0000 ; .word AS
   .word 0x00000000, 0x00000000
 
 AA:
@@ -90,194 +93,191 @@ AAR:
   .byte 'L, 0x00 ; .hword 0x0000 ; .word 0xF3E0B088 // ADDRLO (register)   T2  010001000 Rm4 Rdn
   .word 0x00000000, 0x00000000
 
-// ASC     SBCS (register)     T1  01000 00110 Rm Rdn    E3 E0 A6 88
-// ASI3    SUBSI3 (immediate)  T1  0001111 imm3 Rn Rd    D3 E3 E0 0F
-// ASI8    SUBSI8 (immediate)  T2  00111 Rdn imm8        00 C8 E8 87
-// ASR     SUBSR (register)    T1  0001101 Rm Rn Rd      E6 E3 E0 0D
+AH:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E082 // ASRSI (immediate)   T1  00010 imm5 Rm Rd
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE3E0A488 // ASRSR (register)    T1  01000 00100 Rm Rdn
+  .word 0x00000000, 0x00000000
 
-// AHI     SRSI (immediate)    T1  00010 imm5 Rm Rd      D5 E3 E0 82
-// AHR     SRSR (register)     T1  01000 00100 Rm Rdn    E3 E0 A4 88
+AS:
+  .byte 'C, 0x00 ; .hword 0x0000 ; .word 0xE3E0A688 // SBCS (register)     T1  01000 00110 Rm Rdn
+  .byte 'I, 0x01 ; .hword 0x0000 ; .word ASI
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E00D // SUBSR (register)    T1  0001101 Rm Rn Rd
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// AH
-// --I
-// --R
+ASI:
+  .byte '3, 0x00 ; .hword 0x0000 ; .word 0xD3E3E00F // SUBSI3 (immediate)  T1  0001111 imm3 Rn Rd
+  .byte '8, 0x00 ; .hword 0x0000 ; .word 0x00C8E887 // SUBSI8 (immediate)  T2  00111 Rdn imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 3
-// AS
-// --C
-// --I
-// --R
+B:
+  .byte 'A, 0x00 ; .hword 0x0000 ; .word 0xE3E0A088 // ANDS (register)     T1  01000 00000 Rm Rdn
+  .byte 'C, 0x00 ; .hword 0x0000 ; .word 0xE3E0AE88 // BICS (register)     T1  01000 01110 Rm Rdn
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xE3E0AF88 // MVNS (register)     T1  01000 01111 Rm Rd
+  .byte 'O, 0x00 ; .hword 0x0000 ; .word 0xE3E0AC88 // ORRS (register)     T1  01000 01100 Rm Rdn
+  .byte 'T, 0x00 ; .hword 0x0000 ; .word 0xE3E0A888 // TST (register)      T1  01000 01000 Rm Rd
+  .byte 'X, 0x00 ; .hword 0x0000 ; .word 0xE3E0A188 // EORS (register)     T1  01000 00001 Rm Rdn
+  .word 0x00000000, 0x00000000
 
-// Choice 6
-// B 
-// -A
-// -C
-// -I
-// -O
-// -T
-// -X
+C:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0x00C8E885 // CMPI (immediate)    T1  00101 Rn imm8
+  .byte 'N, 0x00 ; .hword 0x0000 ; .word 0xE3E0AB88 // CMN (register)      T1  01000 01011 Rm Rn
+  .byte 'R, 0x01 ; .hword 0x0000 ; .word CR
+  .word 0x00000000, 0x00000000
 
-// Choice 3
-// C
-// -I
-// -N
-// -R
+CR:
+  .byte '3, 0x00 ; .hword 0x0000 ; .word 0xE3E0AA88 // CMPR (register)     T1  01000 01010 Rm Rn
+  .byte '4, 0x01 ; .hword 0x0000 ; .word CR4
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// CR
-// --3
-// --4
+CR4:
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0xF3E0B688 // CMPRHI (register)   T2  010001011 Rm4 Rd
+  .byte 'L, 0x00 ; .hword 0x0000 ; .word 0xF3E0B488 // CMPRLO (register)   T2  010001010 Rm4 Rd
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// CR4
-// ---H
-// ---L
+D:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0x00C8E884 // MOVSI (immediate)   T1  00100 Rd imm8
+  .byte 'R, 0x01 ; .hword 0x0000 ; .word DR
+  .byte 'S, 0x01 ; .hword 0x0000 ; .word DS
+  .byte 'U, 0x01 ; .hword 0x0000 ; .word DU
+  .word 0x00000000, 0x00000000
 
-// Choice 4
-// D
-// -I
-// -R
-// -S
-// -U
+DR:
+  .byte 'F, 0x00 ; .hword 0x0000 ; .word 0xE3E0A080 // MOVSR (register)    T2  00000 00000 Rm
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0xF3E0BA88 // MOVRHI (register)   T1  010001101 Rm4
+  .byte 'L, 0x00 ; .hword 0x0000 ; .word 0xF3E0B888 // MOVRLO (register)   T1  010001100 Rm4
+  .word 0x00000000, 0x00000000
 
-// Choice 3
-// DR
-// --F
-// --H
-// --L
+DS:
+  .byte 'B, 0x00 ; .hword 0x0000 ; .word 0xE3E0A996 // SXTB                T1  10110 01001 Rm
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0xE3E0A896 // SXTH                T1  10110 01000 Rm
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// DS
-// --B
-// --H
+DU:
+  .byte 'B, 0x00 ; .hword 0x0000 ; .word 0xE3E0AB96 // UXTB                T1  10110 01011 Rm
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0xE3E0AA96 // UXTH                T1  10110 01010 Rm
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// DU
-// --B
-// --H
+J:
+  .byte 'A, 0x00 ; .hword 0x0000 ; .word 0x0000CB9C // B                   T2  11100 imm11
+  .byte 'E, 0x00 ; .hword 0x0000 ; .word 0x00C8A09A // BEQ                 T1  11010 000 imm8
+  .byte 'G, 0x01 ; .hword 0x0000 ; .word JG
+  .byte 'H, 0x01 ; .hword 0x0000 ; .word JH
+  .byte 'I, 0x01 ; .hword 0x0000 ; .word JI
+  .byte 'L, 0x01 ; .hword 0x0000 ; .word JL
+  .byte 'M, 0x00 ; .hword 0x0000 ; .word 0x00C8B09A // BMI                 T1  11010 100 imm8
+  .byte 'N, 0x00 ; .hword 0x0000 ; .word 0x00C8A49A // BNE                 T1  11010 001 imm8
+  .byte 'P, 0x00 ; .hword 0x0000 ; .word 0x00C8B49A // BPL                 T1  11010 101 imm8
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0x00E3BC88 // BX                  T1  01000 1110 Rm 000
+  .byte 'S, 0x00 ; .hword 0x0000 ; .word 0x00C8BC9B // SVC                 T1  11011 111 imm8
+  .byte 'V, 0x01 ; .hword 0x0000 ; .word JV
+  .word 0x00000000, 0x00000000
 
-// Choice 12
-// J
-// -A
-// -E
-// -G
-// -H
-// -I
-// -L
-// -M
-// -N
-// -P
-// -R
-// -S
-// -V
+JG:
+  .byte 'E, 0x00 ; .hword 0x0000 ; .word 0x00C8A89B // BGE                 T1  11011 010 imm8
+  .byte 'T, 0x00 ; .hword 0x0000 ; .word 0x00C8B09B // BGT                 T1  11011 100 imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// JG
-// --E
-// --T
+JH:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0x00C8A09B // BHI                 T1  11011 000 imm8
+  .byte 'S, 0x00 ; .hword 0x0000 ; .word 0x00C8A89A // BHS                 T1  11010 010 imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// JH
-// --I
-// --S
+JI:
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0x0000CB9E // BLHI                T1  11110 imm11
+  .byte 'L, 0x00 ; .hword 0x0000 ; .word 0x0000CB9F // BLLO                T1  11111 imm11
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// JI
-// --H
-// --L
+JL:
+  .byte 'E, 0x00 ; .hword 0x0000 ; .word 0x00C8B49B // BLE                 T1  11011 101 imm8
+  .byte 'O, 0x00 ; .hword 0x0000 ; .word 0x00C8AC9A // BLO                 T1  11010 011 imm8
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0x00E3BE88 // BLX                 T1  01000 1111 Rm 000
+  .byte 'S, 0x00 ; .hword 0x0000 ; .word 0x00C8A49B // BLS                 T1  11011 001 imm8
+  .byte 'T, 0x00 ; .hword 0x0000 ; .word 0x00C8AC9B // BLT                 T1  11011 011 imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 5
-// JL
-// --E
-// --O
-// --R
-// --S
-// --T
+JV:
+  .byte 'C, 0x00 ; .hword 0x0000 ; .word 0x00C8BC9A // BVC                 T1  11010 111 imm8
+  .byte 'S, 0x00 ; .hword 0x0000 ; .word 0x00C8B89A // BVS                 T1  11010 110 imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// JV
-// --C
-// --S
+L:
+  .byte 'B, 0x01 ; .hword 0x0000 ; .word LB
+  .byte 'H, 0x01 ; .hword 0x0000 ; .word LH
+  .byte 'I, 0x01 ; .hword 0x0000 ; .word LI
+  .byte 'L, 0x00 ; .hword 0x0000 ; .word 0x00C8E889 // LDRL (literal)      T1  01001 Rt imm8
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E02C // LDRR (register)     T1  0101100 Rm Rn Rt
+  .byte 'S, 0x01 ; .hword 0x0000 ; .word LS
+  .word 0x00000000, 0x00000000
 
-// Choice 6
-// L
-// -B
-// -H
-// -I
-// -L
-// -R
-// -S
+LB:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E08F // LDRBI (immediate)   T1  01111 imm5 Rn Rt
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E02E // LDRBR (register)    T1  0101110 Rm Rn Rt
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// LB
-// --I
-// --R
+LH:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E091 // LDRHI (immediate)   T1  10001 imm5 Rn Rt
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E02D // LDRHR (register)    T1  0101101 Rm Rn Rt
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// LH
-// --I
-// --R
+LI:
+  .byte '5, 0x00 ; .hword 0x0000 ; .word 0xD5E3E08D // LDRI5 (immediate)   T1  01101 imm5 Rn Rt
+  .byte '8, 0x00 ; .hword 0x0000 ; .word 0x00C8E893 // LDRI8 (immediate)   T2  10011 Rt imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// LI
-// --5
-// --8
+LS:
+  .byte 'B, 0x00 ; .hword 0x0000 ; .word 0xE6E3E02B // LDRSB (register)    T1  0101011 Rm Rn Rt
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0xE6E3E02F // LDRSH (register)    T1  0101111 Rm Rn Rt
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// LS
-// --B
-// --H
+P:
+  .byte 'L, 0x00 ; .hword 0x0000 ; .word 0x0000B496 // PUSHLR              T1  10110 10100 000000
+  .byte 'P, 0x00 ; .hword 0x0000 ; .word 0x0000B497 // POPPC               T1  10111 10100 000000
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// P
-// -L
-// -P
+R:
+  .byte 'B, 0x01 ; .hword 0x0000 ; .word RB
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE3E0A788 // RORS (register)     T1  01000 00111 Rm Rdn
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// R
-// -B
-// -R
+RB:
+  .byte 'H, 0x00 ; .hword 0x0000 ; .word 0xE3E0A997 // REV16               T1  10111 01001 Rm Rd
+  .byte 'S, 0x00 ; .hword 0x0000 ; .word 0xE3E0AB97 // REVSH               T1  10111 01011 Rm Rd
+  .byte 'W, 0x00 ; .hword 0x0000 ; .word 0xE3E0A897 // REV                 T1  10111 01000 Rm Rd
+  .word 0x00000000, 0x00000000
 
-// Choice 3
-// RB
-// --H
-// --S
-// --W
+S:
+  .byte 'B, 0x01 ; .hword 0x0000 ; .word SB
+  .byte 'H, 0x01 ; .hword 0x0000 ; .word SH
+  .byte 'I, 0x01 ; .hword 0x0000 ; .word SI
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E028 // STRR (register)     T1  0101000 Rm Rn Rt
+  .word 0x00000000, 0x00000000
 
-// Choice 4
-// S
-// -B
-// -H
-// -I
-// -R
+SB:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E08E // STRBI (immediate)   T1  01110 imm5 Rn Rt
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E02A // STRBR (register)    T1  0101010 Rm Rn Rt
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// SB
-// --I
-// --R
+SH:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E090 // STRHI (immediate)   T1  10000 imm5 Rn Rt
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE6E3E029 // STRHR (register)    T1  0101001 Rm Rn R
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// SH
-// --I
-// --R
+SI:
+  .byte '5, 0x00 ; .hword 0x0000 ; .word 0xD5E3E08C // STRI5 (immediate)   T1  01100 imm5 Rn Rt
+  .byte '8, 0x00 ; .hword 0x0000 ; .word 0x00C8E892 // STRI8 (immediate)   T2  10010 Rt imm8
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// SI
-// --5
-// --8
+T:
+  .byte 'L, 0x01 ; .hword 0x0000 ; .word TL
+  .byte 'R, 0x01 ; .hword 0x0000 ; .word TR
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// T
-// -L
-// -R
+TL:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E080 // LSLSI (immediate)   T1  00000 imm5 Rm Rd
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE3E0A288 // LSLSR (register)    T1  01000 00010 Rm Rdn
+  .word 0x00000000, 0x00000000
 
-// Choice 2
-// TL
-// --I
-// --R
-
-// Choice 2
-// TR
-// --I
-// --R
+TR:
+  .byte 'I, 0x00 ; .hword 0x0000 ; .word 0xD5E3E081 // LSRSI (immediate)   T1  00001 imm5 Rm Rd
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0xE3E0A388 // LSRSR (register)    T1  01000 00011 Rm Rdn
+  .word 0x00000000, 0x00000000
