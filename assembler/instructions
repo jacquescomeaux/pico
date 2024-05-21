@@ -32,13 +32,13 @@ ADCS (register)     T1  01000 00101 Rm Rdn    E3 E0 A5 88
 ADDSI3 (immediate)  T1  0001110 imm3 Rn Rd    D3 E3 E0 0E
 ADDSI8 (immediate)  T2  00110 Rdn imm8        00 C8 E3 86
 ADDSR (register)    T1  0001100 Rm Rn Rd      E6 E3 E0 0C
-ADDRHI (register)   T2  010001001 Rm4 Rdn     F3 E0 B2 88     TODO (dn + 8)
+ADDRHI (register)   T2  010001001 Rm4 Rdn     F3 E0 B2 88
 ADDRLO (register)   T2  010001000 Rm4 Rdn     F3 E0 B0 88
 ADR                 T1  10100 Rd imm8         00 C8 E3 94
 ANDS (register)     T1  01000 00000 Rm Rdn    E3 E0 A0 88
 ASRSI (immediate)   T1  00010 imm5 Rm Rd      D5 E3 E0 82
 ASRSR (register)    T1  01000 00100 Rm Rdn    E3 E0 A4 88
-BEQ                 T1  11010 000 imm8        00 C8 A0 9A     TODO overlap
+BEQ                 T1  11010 000 imm8        00 C8 A0 9A
 BNE                 T1  11010 001 imm8        00 C8 A4 9A
 BHS                 T1  11010 010 imm8        00 C8 A8 9A
 BLO                 T1  11010 011 imm8        00 C8 AC 9A
@@ -61,7 +61,7 @@ BX                  T1  01000 1110 Rm 000     00 E3 BC 88
 CMN (register)      T1  01000 01011 Rm Rn     E3 E0 AB 88
 CMPI (immediate)    T1  00101 Rn imm8         00 C8 E8 85
 CMPR (register)     T1  01000 01010 Rm Rn     E3 E0 AA 88
-CMPRHI (register)   T2  010001011 Rm4 Rd      F3 E0 B6 88      TODO (d + 8)
+CMPRHI (register)   T2  010001011 Rm4 Rd      F3 E0 B6 88
 CMPRLO (register)   T2  010001010 Rm4 Rd      F3 E0 B4 88 
 EORS (register)     T1  01000 00001 Rm Rdn    E3 E0 A1 88
 LDRI5 (immediate)   T1  01101 imm5 Rn Rt      D5 E3 E0 8D
@@ -79,19 +79,19 @@ LSLSR (register)    T1  01000 00010 Rm Rdn    E3 E0 A2 88
 LSRSI (immediate)   T1  00001 imm5 Rm Rd      D5 E3 E0 81
 LSRSR (register)    T1  01000 00011 Rm Rdn    E3 E0 A3 88
 MOVSI (immediate)   T1  00100 Rd imm8         00 C8 E8 84
-MOVRHI (register)   T1  010001101 Rm4 Rd      F3 E0 BA 88     TODO (d + 8)
+MOVRHI (register)   T1  010001101 Rm4 Rd      F3 E0 BA 88
 MOVRLO (register)   T1  010001100 Rm4 Rd      F3 E0 B8 88
 MOVSR (register)    T2  00000 00000 Rm Rd     E3 E0 A0 80
 MULS                T1  01000 01101 Rn Rdm    E3 E0 AD 88
 MVNS (register)     T1  01000 01111 Rm Rd     E3 E0 AF 88
 ORRS (register)     T1  01000 01100 Rm Rdn    E3 E0 AC 88
-PUSHLR              T1  10110 10100 000000    00 00 B4 96     TODO nothing to do
+PUSHLR              T1  10110 10100 000000    00 00 B4 96
 POPPC               T1  10111 10100 000000    00 00 B4 97
 REV                 T1  10111 01000 Rm Rd     E3 E0 A8 97
 REV16               T1  10111 01001 Rm Rd     E3 E0 A9 97
 REVSH               T1  10111 01011 Rm Rd     E3 E0 AB 97
 RORS (register)     T1  01000 00111 Rm Rdn    E3 E0 A7 88
-NEG (immediate)     T1  01000 01001 Rn Rd     E3 E0 A9 88     TODO it's negate
+NEG (immediate)     T1  01000 01001 Rn Rd     E3 E0 A9 88
 SBCS (register)     T1  01000 00110 Rm Rdn    E3 E0 A6 88
 STRI5 (immediate)   T1  01100 imm5 Rn Rt      D5 E3 E0 8C
 STRI8 (immediate)   T2  10010 Rt imm8         00 C8 E8 92
@@ -231,3 +231,7 @@ P for PUSH or POP
 
 PL      PUSHLR              T1  10110 10100 000000    00 00 B4 96
 PP      POPPC               T1  10111 10100 000000    00 00 B4 97
+
+Q for QUOTE
+
+Q       QUOTE                   imm10 imm6            00 00 C6 DA

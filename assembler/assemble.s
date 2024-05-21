@@ -10,6 +10,7 @@
 // - decide on additional push or pops
 // - add data literal "instructions"
 // - redo_line is problematic
+// - PP and PL are broken (end char)
 
 assemble:
   PUSH {LR}

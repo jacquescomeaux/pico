@@ -62,6 +62,7 @@ start:
   .byte 'J, 0x01 ; .hword 0x0000 ; .word J
   .byte 'L, 0x01 ; .hword 0x0000 ; .word L
   .byte 'P, 0x01 ; .hword 0x0000 ; .word P
+  .byte 'Q, 0x00 ; .hword 0x0000 ; .word 0x0000C6DA // QUOTE                   imm10 imm6
   .byte 'R, 0x01 ; .hword 0x0000 ; .word R
   .byte 'S, 0x01 ; .hword 0x0000 ; .word S
   .byte 'T, 0x01 ; .hword 0x0000 ; .word T
