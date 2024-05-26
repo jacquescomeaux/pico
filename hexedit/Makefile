@@ -1,21 +1,21 @@
 all: build
 
-build: echo.uf2
+build: hexedit.uf2
 
-echo.uf2: echo.elf
-	../elf/elf2uf2 echo.elf echo.uf2
+hexedit.uf2: hexedit.elf
+	../elf/elf2uf2 hexedit.elf hexedit.uf2
 
-objects = main.o uart.o
+objects = main.o uart.o hexedit.o
 
-echo.elf: $(objects)
-	arm-none-eabi-ld -T pico_ram_only.ld -o echo.elf $(objects) ../setup/setup.so
+hexedit.elf: $(objects)
+	arm-none-eabi-ld -T pico_persist.ld -o hexedit.elf $(objects) ../setup/setup.so
 
 $(objects): %.o: %.s
 	arm-none-eabi-as -o $@ $<
 
 clean:
-	rm echo.elf echo.uf2 *.o
+	rm hexedit.elf hexedit.uf2 *.o
 
-flash: echo.uf2
+flash: hexedit.uf2
 	[ -h /dev/disk/by-label/RPI-RP2 ] || sleep 3s
-	cat echo.uf2 > /dev/disk/by-label/RPI-RP2
+	cat hexedit.uf2 > /dev/disk/by-label/RPI-RP2

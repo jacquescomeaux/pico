@@ -2,6 +2,8 @@
 .cpu cortex-m0plus
 .thumb
 
+.section .entry, "ax"
+
 .type main, %function
 .global main
 
@@ -10,7 +12,4 @@ main:
   bl setup_clocks
   bl setup_gpio
   bl setup_uart
-1:
-  bl uart_recv
-  bl uart_send
-  b 1b
+  b hexedit
