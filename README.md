@@ -17,10 +17,9 @@ and begin executing them as instructions.
 
 This is the first step in bootstrapping the whole system.
 
-%% Better editor
+## Better editor
 
-%% A more robust and user-friendly hex-editor.
-%% It can duplicate itself.
+A more robust and user-friendly hex editor.
 
 ## Assembler
 
@@ -41,7 +40,6 @@ Goals:
 - Reasonably extensible
 - Small code size
 
-%% ## LISP Interpreter
+## LISP Interpreter
 
-%% A LISP interpreter for the Raspberry Pi Pico,
-%% developed ON a raspberry pi pico
+A LISP interpreter for the Raspberry Pi Pico.
