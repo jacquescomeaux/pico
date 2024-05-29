@@ -10,11 +10,8 @@ R5: second-level (octal or register) scratch
 R6: word under construction
 R7: parse instructions
 R8: end_char
-R8:
-R9:
-R10:
-R11:
-R12:
+R9: uart_send
+R10: get_char
 
 Encoding
 

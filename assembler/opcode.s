@@ -27,30 +27,25 @@
 
 // R4: start of choices, final result (parse instruction)
 // R5: choice pointer
-opcode:
-  PUSH {LR}
-  ADR R4, start     // start at the start
-get_match:
-  BL get_char
-  MOV R5, R4        // reset choice pointer
-  B first_time      // don't increment pointer on first time
-next_choice:
-  ADDS R5, 8        // increment choice pointer
-first_time:
-  LDRB R1, [R5]     // load char
-  TST R1, R1        // test if char is zero
-  BEQ get_match     // if run out of options, get a new char
-  CMP R0, R1        // check if input matches char
-  BNE next_choice   // if not match try next option
-  BL uart_send      // echo char send if match
-  LDR R4, [R5, 4]   // load parse instruction or offset
-  LDRB R1, [R5, 1]  // load parse instruction vs offset byte
-  TST R1, R1        // check if zero
-  BNE get_match     // non-zero means it's an address
-get_end_char:
-  BL get_char
-  BNE get_end_char
-  POP {PC}          // zero means it's a parse instruction
+opcode: PUSH    {LR}
+        ADR     R4, start     // start at the start
+10:     BLX     R10
+        MOV     R5, R4        // reset choice pointer
+        B       30f           // don't increment pointer on first time
+20:     ADDS    R5, 8         // increment choice pointer
+30:     LDRB    R1, [R5]      // load char
+        TST     R1, R1        // test if char is zero
+        BEQ     10b           // if run out of options, get a new char
+        CMP     R0, R1        // check if input matches char
+        BNE     20b           // if not match try next option
+        BLX     R9            // echo char send if match
+        LDR     R4, [R5, 4]   // load parse instruction or offset
+        LDRB    R1, [R5, 1]   // load parse instruction vs offset byte
+        TST     R1, R1        // check if zero
+        BNE     10b           // non-zero means it's an address
+40:     BLX     R10
+        BNE     40b
+        POP     {PC}          // zero means it's a parse instruction
 
 .align 4
 
