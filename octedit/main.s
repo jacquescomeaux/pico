@@ -12,7 +12,7 @@ main:
   bl setup_clocks
   bl setup_gpio
   bl setup_uart
-  b hexedit
+  b octedit
 
 .section .stage_2_crc
 .word 0x00000000

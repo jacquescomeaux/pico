@@ -4,10 +4,10 @@
 
 .equ SRAM_BASE, 0x20000000
 
-.type hexedit, %function
-.global hexedit
+.type octedit, %function
+.global octedit
 
-hexedit:
+octedit:
   ldr r6, =SRAM_BASE
   adds r5, r6, 1
 10:
