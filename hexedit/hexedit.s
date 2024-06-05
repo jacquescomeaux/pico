@@ -24,7 +24,6 @@ hexedit:
   adds r4, r0
   b 20b
 30:
-  movs r0, '\r
   bl uart_send
   movs r0, '\n
   bl uart_send
