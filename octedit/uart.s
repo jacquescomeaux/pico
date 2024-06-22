@@ -3,8 +3,8 @@
 .thumb
 
 .equ UART0_BASE, 0x40034000
-.equ UARTDR_OFST,     0x00
-.equ UARTFR_OFST,     0x18
+.equ UARTDR_OFST, 0x00
+.equ UARTFR_OFST, 0x18
 
 .type uart_send, %function
 .global uart_send

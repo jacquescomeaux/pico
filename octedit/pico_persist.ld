@@ -5,8 +5,9 @@ MEMORY {
 
 SECTIONS {
   .text : {
-    *(.entry);
-    *(.text);
+    setup.o(.text);
+    octedit.o(.text);
+    uart.o(.text);
     . = 252;
     *(.stage_2_crc);
   } >SRAM AT>FLASH
