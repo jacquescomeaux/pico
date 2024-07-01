@@ -15,20 +15,23 @@ octedit.uf2: octedit.bin
 	printf %220s | tr " " "\0" >> octedit.uf2  # 0 padding
 	echo -ne "\x30\x6F\xB1\x0A" >> octedit.uf2 # Magic end
 
-octedit.bin: octedit.elf
+octedit.bin: octedit.elf crc32
 	arm-none-eabi-objcopy -O binary octedit.elf octedit.bin
+	./crc32 < octedit.bin >> octedit.bin
 
-objects = setup.o octedit.o uart.o crc.o
+crc32: crc32.c
+	gcc crc32.c -o crc32
 
-octedit.elf: $(objects)
+objects = setup.o octedit.o uart.o
+
+octedit.elf: $(objects) pico_persist.ld
 	arm-none-eabi-ld -T pico_persist.ld -o octedit.elf $(objects)
-	./checksum_pico_elf.py octedit.elf
 
 $(objects): %.o: %.s
 	arm-none-eabi-as -o $@ $<
 
 clean:
-	rm octedit.elf octedit.bin octedit.uf2 *.o
+	rm octedit.elf octedit.bin octedit.uf2 *.o crc32
 
 flash: octedit.uf2
 	[ -h /dev/disk/by-label/RPI-RP2 ] || sleep 3s
