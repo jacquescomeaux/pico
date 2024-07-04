@@ -1,6 +1,4 @@
-all: build
-
-build: octedit.uf2
+PICO = /dev/disk/by-label/RPI-RP2
 
 octedit.uf2: octedit.bin
 	echo -ne "\x55\x46\x32\x0A" > octedit.uf2  # Magic 0
@@ -19,9 +17,6 @@ octedit.bin: octedit.elf crc32
 	arm-none-eabi-objcopy -O binary octedit.elf octedit.bin
 	./crc32 < octedit.bin >> octedit.bin
 
-crc32: crc32.c
-	gcc crc32.c -o crc32
-
 objects = setup.o octedit.o uart.o
 
 octedit.elf: $(objects) pico_persist.ld
@@ -30,9 +25,19 @@ octedit.elf: $(objects) pico_persist.ld
 $(objects): %.o: %.s
 	arm-none-eabi-as -o $@ $<
 
+.PHONY: clean
 clean:
 	rm octedit.elf octedit.bin octedit.uf2 *.o crc32
 
-flash: octedit.uf2
-	[ -h /dev/disk/by-label/RPI-RP2 ] || sleep 3s
-	cat octedit.uf2 > /dev/disk/by-label/RPI-RP2
+.PHONY: flash
+flash: $(PICO) octedit.uf2
+	cat octedit.uf2 > $(PICO)
+
+.PHONY: check
+check: $(PICO)
+	@echo Ready to flash
+
+$(PICO):
+	@echo "RPI-RP2 bootloader drive not found"
+	@echo Connect the pico with USB cable while holding bootsel button
+	@false
