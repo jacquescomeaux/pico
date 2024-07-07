@@ -14,15 +14,12 @@
 assemble:   PUSH    {LR}
             LDR     R0, =uart_send
             LDR     R1, =get_char
-            // ADDS    R0, 1
-            // ADDS    R1, 1
             MOV     R9, R0
             MOV     R10, R1
             MOVS    R6, 0
             MOVS    R0, ' 
             MOV     R8, R0
             LDR     R1, =opcode
-            // ADDS    R1, 1
             BLX     R1
             MOV     R0, R8
             BLX     R9
@@ -41,7 +38,6 @@ handle_reg: MOVS    R1, (1<<4)      // bit 4 mask // if 111xyyyy
             ANDS    R0, R1          // get bit 4
             ADDS    R0, 3           // add 3 to it (now 3 or 4)
             LDR     R1, =register
-            // ADDS    R1, 1
             BLX     R1
             MOVS    R0, 0x0F        // lower nibble mask
             ANDS    R0, R7          // store shift amount in R0
@@ -65,7 +61,6 @@ fin:        LSLS    R0, R2
 handle_imm: MOVS    R1, 0x0F        // lower nibble mask
             ANDS    R0, R1          // store immediate width in R0
             LDR     R1, =octal
-            // ADDS    R1, 1
             BLX     R1              // result is put in R4
             LSLS    R0, R7, 27
             LSRS    R0, 31
@@ -77,6 +72,4 @@ done_stuff: MOV     R0, R8          // copy the end_char into R0
             BLX     R9              // echo the space (or carriage return)
 here:       LSRS    R7, 0x8         // get next parse instruction
             BNE     main_loop       // if it's nonzero there are more things to parse
-done:       MOVS    R0, '\n         // send newline
-            BLX     R9
             POP     {PC}
