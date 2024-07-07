@@ -1,6 +1,4 @@
-all: build
-
-build: assemble.uf2
+PICO = /dev/disk/by-label/RPI-RP2
 
 assemble.uf2: assemble.elf
 	../elf/elf2uf2 assemble.elf assemble.uf2
@@ -13,9 +11,19 @@ assemble.elf: $(objects)
 $(objects): %.o: %.s
 	arm-none-eabi-as -o $@ $<
 
+.PHONY: clean
 clean:
 	rm assemble.elf assemble.uf2 *.o
 
-flash: assemble.uf2
-	[ -h /dev/disk/by-label/RPI-RP2 ] || sleep 2s
-	cat assemble.uf2 > /dev/disk/by-label/RPI-RP2
+.PHONY: flash
+flash: $(PICO) assemble.uf2
+	cat assemble.uf2 > $(PICO)
+
+.PHONY: check
+check: $(PICO)
+	@echo Ready to flash
+
+$(PICO):
+	@echo "RPI-RP2 bootloader drive not found"
+	@echo Connect the pico with USB cable while holding bootsel button
+	@false

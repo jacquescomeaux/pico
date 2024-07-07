@@ -39,12 +39,17 @@ opcode: PUSH    {LR}
         CMP     R0, R1        // check if input matches char
         BNE     20b           // if not match try next option
         BLX     R9            // echo char send if match
-        LDR     R4, [R5, 4]   // load parse instruction or offset
+        LDRB    R1, [R5, 2]   // load set end char byte
+        TST     R1, R1        // test value
+        BEQ     40f           // if zero skip set end char
+        LDRB    R1, [R5, 3]   // load new end char
+        MOV     R8, R1        // set new end char
+40:     LDR     R4, [R5, 4]   // load parse instruction or offset
         LDRB    R1, [R5, 1]   // load parse instruction vs offset byte
         TST     R1, R1        // check if zero
         BNE     10b           // non-zero means it's an address
-40:     BLX     R10
-        BNE     40b
+50:     BLX     R10
+        BNE     50b
         POP     {PC}          // zero means it's a parse instruction
 
 .align 4
@@ -56,7 +61,7 @@ start:
   .byte 'D, 0x01 ; .hword 0x0000 ; .word D
   .byte 'J, 0x01 ; .hword 0x0000 ; .word J
   .byte 'L, 0x01 ; .hword 0x0000 ; .word L
-  .byte 'P, 0x01 ; .hword 0x0000 ; .word P
+  .byte 'P, 0x01 , 0x01, '\r     ; .word P
   .byte 'Q, 0x00 ; .hword 0x0000 ; .word 0x0000C6DA // QUOTE                   imm10 imm6
   .byte 'R, 0x01 ; .hword 0x0000 ; .word R
   .byte 'S, 0x01 ; .hword 0x0000 ; .word S

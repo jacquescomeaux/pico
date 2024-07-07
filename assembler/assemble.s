@@ -10,20 +10,19 @@
 // - test each instruction
 // - decide on additional push or pops
 // - add GO to get_char
-// - PP and PL are broken (end char)
 
 assemble:   PUSH    {LR}
             LDR     R0, =uart_send
             LDR     R1, =get_char
-            ADDS    R0, 1
-            ADDS    R1, 1
+            // ADDS    R0, 1
+            // ADDS    R1, 1
             MOV     R9, R0
             MOV     R10, R1
             MOVS    R6, 0
             MOVS    R0, ' 
             MOV     R8, R0
             LDR     R1, =opcode
-            ADDS    R1, 1
+            // ADDS    R1, 1
             BLX     R1
             MOV     R0, R8
             BLX     R9
@@ -31,7 +30,7 @@ assemble:   PUSH    {LR}
 main_loop:  LSRS    R0, R7, 8       // just peek
             BNE     skip            // if more stuff then skip
             MOVS    R0, '\r
-            MOV     R8, R0          //set end char to carriage return
+            MOV     R8, R0          // set end char to carriage return
 skip:       UXTB    R0, R7          // store lsb in R0
             LSRS    R1, R0, 4       // upper nibble
             CMP     R1, 0xC         // if 0xxxxxxx or 10xxxxxx
@@ -42,7 +41,7 @@ handle_reg: MOVS    R1, (1<<4)      // bit 4 mask // if 111xyyyy
             ANDS    R0, R1          // get bit 4
             ADDS    R0, 3           // add 3 to it (now 3 or 4)
             LDR     R1, =register
-            ADDS    R1, 1
+            // ADDS    R1, 1
             BLX     R1
             MOVS    R0, 0x0F        // lower nibble mask
             ANDS    R0, R7          // store shift amount in R0
@@ -66,7 +65,7 @@ fin:        LSLS    R0, R2
 handle_imm: MOVS    R1, 0x0F        // lower nibble mask
             ANDS    R0, R1          // store immediate width in R0
             LDR     R1, =octal
-            ADDS    R1, 1
+            // ADDS    R1, 1
             BLX     R1              // result is put in R4
             LSLS    R0, R7, 27
             LSRS    R0, 31
