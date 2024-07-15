@@ -9,7 +9,6 @@
 // - make subroutine addresses explicit
 // - test each instruction
 // - decide on additional push or pops
-// - add GO to get_char
 
 assemble:   PUSH    {LR}
             LDR     R0, =uart_send
@@ -72,4 +71,5 @@ done_stuff: MOV     R0, R8          // copy the end_char into R0
             BLX     R9              // echo the space (or carriage return)
 here:       LSRS    R7, 0x8         // get next parse instruction
             BNE     main_loop       // if it's nonzero there are more things to parse
+            MOVS    R0, 0
             POP     {PC}

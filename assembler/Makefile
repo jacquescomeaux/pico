@@ -1,29 +1,38 @@
-PICO = /dev/disk/by-label/RPI-RP2
+DEVICE = /dev/ttyUSB0
 
-assemble.uf2: assemble.elf
-	../elf/elf2uf2 assemble.elf assemble.uf2
+.PHONY: build
+build: assemble.he
+
+assemble.he: assemble.bin
+	od -An -tx2 -v assemble.bin | sed "s/^ //" | tr " " "\n" | tr [:lower:] [:upper:] | sed "s/^/0x/" > assemble.he
+
+assemble.bin: assemble.elf
+	arm-none-eabi-objcopy -O binary assemble.elf assemble.bin
 
 objects = main.o uart.o assemble.o register.o octal.o opcode.o
 
-assemble.elf: $(objects)
-	arm-none-eabi-ld -T pico_ram_only.ld -o assemble.elf $(objects) ../setup/setup.so
+assemble.elf: pico_bin.ld $(objects)
+	arm-none-eabi-ld -T pico_bin.ld -o assemble.elf $(objects)
 
 $(objects): %.o: %.s
 	arm-none-eabi-as -o $@ $<
 
 .PHONY: clean
 clean:
-	rm assemble.elf assemble.uf2 *.o
+	rm assemble.elf assemble.bin assemble.he *.o slowcat
 
-.PHONY: flash
-flash: $(PICO) assemble.uf2
-	cat assemble.uf2 > $(PICO)
+.PHONY: dump
+dump: assemble.bin
+	@od -Ax -tx2 -v assemble.bin
 
-.PHONY: check
-check: $(PICO)
-	@echo Ready to flash
+.PHONY: serial
+serial: $(DEVICE) assemble.he slowcat
+	cat assemble.he | tr "\n" "\r" | ./slowcat | picocom -b 115200 -q $(DEVICE)
+	@echo
+	echo -n "G" | picocom -b 115200 -q $(DEVICE)
+	@echo
 
-$(PICO):
-	@echo "RPI-RP2 bootloader drive not found"
-	@echo Connect the pico with USB cable while holding bootsel button
+$(DEVICE):
+	@echo Serial device not found
+	@echo Connect USB cable from USB-UART bridge
 	@false
