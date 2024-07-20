@@ -155,8 +155,8 @@ JLE     BLE                 T1  11011 101 imm8        00 C8 B4 9B
 JA      B                   T2  11100 imm11           00 00 CB 9C
 JIH     BLHI                T1  11110 imm11           00 00 CB 9E
 JIL     BLLO                T1  11111 imm11           00 00 CB 9F
-JLR     BLX                 T1  01000 1111 Rm 000     00 E3 BE 88
-JR      BX                  T1  01000 1110 Rm 000     00 E3 BC 88
+JLR     BLX                 T1  01000 1111 Rm4 000    00 F3 BE 88
+JR      BX                  T1  01000 1110 Rm4 000    00 F3 BC 88
 JS      SVC                 T1  11011 111 imm8        00 C8 BC 9B
 
 C for COMPARE

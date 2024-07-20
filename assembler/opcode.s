@@ -168,7 +168,7 @@ J:
   .byte 'M, 0x00 ; .hword 0x0000 ; .word 0x00C8B09A // BMI                 T1  11010 100 imm8
   .byte 'N, 0x00 ; .hword 0x0000 ; .word 0x00C8A49A // BNE                 T1  11010 001 imm8
   .byte 'P, 0x00 ; .hword 0x0000 ; .word 0x00C8B49A // BPL                 T1  11010 101 imm8
-  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0x00E3BC88 // BX                  T1  01000 1110 Rm 000
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0x00F3BC88 // BX                  T1  01000 1110 Rm4 000
   .byte 'S, 0x00 ; .hword 0x0000 ; .word 0x00C8BC9B // SVC                 T1  11011 111 imm8
   .byte 'V, 0x01 ; .hword 0x0000 ; .word JV
   .word 0x00000000, 0x00000000
@@ -191,7 +191,7 @@ JI:
 JL:
   .byte 'E, 0x00 ; .hword 0x0000 ; .word 0x00C8B49B // BLE                 T1  11011 101 imm8
   .byte 'O, 0x00 ; .hword 0x0000 ; .word 0x00C8AC9A // BLO                 T1  11010 011 imm8
-  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0x00E3BE88 // BLX                 T1  01000 1111 Rm 000
+  .byte 'R, 0x00 ; .hword 0x0000 ; .word 0x00F3BE88 // BLX                 T1  01000 1111 Rm4 000
   .byte 'S, 0x00 ; .hword 0x0000 ; .word 0x00C8A49B // BLS                 T1  11011 001 imm8
   .byte 'T, 0x00 ; .hword 0x0000 ; .word 0x00C8AC9B // BLT                 T1  11011 011 imm8
   .word 0x00000000, 0x00000000
