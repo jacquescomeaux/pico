@@ -17,7 +17,7 @@ JA      3766            next char
 JR      R14             jump to link register
 Q       0400 00         uart zero base
 Q       0400 03
-<0200 getstr
+<0180 getstr
 register zero  : string offset
 register one   : current character, uart status
 register two   : rx fifo empty bitmask
@@ -46,3 +46,14 @@ JR      R14             jump to link register
 Q       0000 00         alignment
 Q       0400 00         uart zero base
 Q       0400 03
+<0200 cmpstr
+DI      R4 0
+LBR     R2 R0 R4
+LBR     R3 R1 R4
+CR3     R2 R3
+JN      3
+CI      R2 0
+JE      1
+AAI8    R4 1
+JA      3767
+JR      R14
