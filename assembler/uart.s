@@ -9,14 +9,14 @@
 .type uart_send, %function
 .type uart_recv, %function
 .type get_char, %function
-.type send_hex, %function
-.type get_hex, %function
+.type send_oct, %function
+.type get_oct, %function
 
 .global uart_send
 .global uart_recv
 .global get_char
-.global send_hex
-.global get_hex
+.global send_oct
+.global get_oct
 
 uart_send:  LDR     R1, =UART0_BASE         // 0x0000 0x4917
             MOVS    R3, 0b1 << 5            // 0x0002 0x2320  ; TX FIFO FULL
@@ -46,46 +46,44 @@ get_char:   PUSH    {LR}                    // 0x001C 0xB500
             POP     {R1}
 3:          CMP     R0, R8                  // 0x0022 0x4540
             POP     {PC}                    // 0x0024 0xBD00
-send_hex:   PUSH    {LR}          // 000350 132400 B500
-            MOVS    R4, R0        // 000352 000004 0004
-            MOVS    R5, R1        // 000354 000015 000D
-            LSLS    R1, 0x2       // 000356 000211 0049
-            RORS    R4, R1        // 000360 040714 41CC
-            MOVS    R0, 0x30      // 000362 020060 2030 ASCII 0
-            BL      uart_send     // 000364 043710  UARTTX
-            MOVS    R0, 0x78      // 000366 020170  ASCII x
-            BL      uart_send     // 000370 043710  UARTTX
-0:          MOVS    R0, 0x1C      // 000372 020034
-            RORS    R4, R0        // 000374 040704
-            MOVS    R0, 0x0F      // 000376 020017
-            ANDS    R0, R4        // 000400 040040
-            CMP     R0, 0x9       // 000402 024011
-            BHI     1f            // 000404 154001
-            ADDS    R0, 0x30      // 000406 030060  ASCII 0
-            B       2f            // 000410 160000
-1:          ADDS    R0, 0x37      // 000412 030067  ASCII A MINUS 10
-2:          BL      uart_send     // 000414 043710  UARTTX
-            SUBS    R5, 1         // 000416 036401
-            BNE     0b            // 000420 150763
-            POP     {PC}          // 000422 136400
-get_hex:    PUSH    {LR}          // 000224 132400
+send_oct:   PUSH    {LR}
+            MOVS    R4, R0
+            MOVS    R0, R1
+            MOVS    R1, 32
+            SUBS    R1, R0
+            LSLS    R4, R1
+            MOVS    R5, 0
+loop1:      CMP     R0, 3
+            BLO     done
+            SUBS    R0, 3
+            ADDS    R5, 1
+            B       loop1
+done:       TST     R0, R0
+            BEQ     loop2
+            RSBS    R0, 0
+            ADDS    R0, 32
+            RORS    R4, R0
+            ADDS    R5, 1
+loop2:      MOVS    R0, 0x07
+            ANDS    R0, R4
+            ADDS    R0, 0x30
+            BL      uart_send
+            MOVS    R0, 0x1D
+            RORS    R4, R0
+            SUBS    R5, 1
+            BNE     loop2
+            POP     {PC}
+get_oct:    PUSH    {LR}          // 000224 132400
             MOVS    R4, 0x0       // 000226 022000
             MOVS    R5, 0x4       // 000230 022404
 10:         BL      uart_recv     // 000232 043700  HEX LOOP, UARTRX
             CMP     R0, 0x30      // 000234 024060  ASCII 0
             BLO     10b           // 000236 151774
-            CMP     R0, 0x39      // 000240 024071  ASCII 9
-            BLS     20f           // 000242 154406
-            CMP     R0, 0x41      // 000244 024101  ASCII A
-            BLO     10b           // 000246 151770
-            CMP     R0, 0x46      // 000250 024106  ASCII F
-            BHI     10b           // 000252 154366
-            BL      uart_send     // 000254 043710  UARTTX
-            SUBS    R0, 0x37      // 000256 034067  ASCII A MINUS 10
-            B       30f           // 000260 160001
-20:         BL      uart_send     // 000262 043710  UARTTX
+            CMP     R0, 0x37      // 000240 024071  ASCII 7
+            BHI     10b           // 000242 154406
+            BL      uart_send     // 000262 043710  UARTTX
             SUBS    R0, 0x30      // 000264 034060  ASCII 0
-30:         LSLS    R4, 0x4       // 000266 000444
+30:         LSLS    R4, 0x3       // 000266 000444
             ADDS    R4, R0        // 000270 014044
             SUBS    R5, 0x1       // 000272 036401
             BNE     10b           // 000274 150755

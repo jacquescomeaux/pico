@@ -16,13 +16,15 @@ main:       LDR     R0, =0x20000000         // SRAM_BASE
             MOVS    R0, '\r                 // SEND CR
             BL      uart_send
             MOV     R1, R11                 // GET ADDRESS
-            LSRS    R1, 16                  // SHIFT OUT LOWER HALFWORD
+            LSRS    R1, 12                  // SHIFT OUT LOWER 12 BITS
             MOVS    R0, R1                  // SAVE IN R0
-            LSLS    R1, 16                  // SHIFT BACK
+            LSLS    R1, 12                  // SHIFT BACK
             MOV     R11, R1                 // SAVE ALTERRED ADDRESS
-            MOVS    R1, 4                   // SEND HEX WITH WIDTH 4
-            BL      send_hex
-            BL      get_hex                 // GET HEX INPUT FOR OFFSET
+            MOVS    R1, 20                  // SEND OCTAL WITH WIDTH 20
+            BL      send_oct
+            BL      get_oct                 // GET OCTAL INPUT FOR OFFSET
+            MOVS    R0, 0x1
+            BICS    R4, R0
             MOV     R0, R11                 // ADD OFFSET TO ADDRESS
             ADDS    R0, R4
             B       0b
@@ -44,14 +46,14 @@ main:       LDR     R0, =0x20000000         // SRAM_BASE
 
 PROMPT:     PUSH    {LR}
             MOV     R0, R11                 // CURRENT ADDRESS
-            MOVS    R1, 8
-            BL      send_hex
+            MOVS    R1, 32
+            BL      send_oct
             MOVS    R0, '                   // SPACE
             BL      uart_send
             MOV     R1, R11                 // CURRENT CONTENTS
             LDRH    R0, [R1]
-            MOVS    R1, 4
-            BL      send_hex
+            MOVS    R1, 16
+            BL      send_oct
             MOVS    R0, '                   // SPACE
             BL      uart_send
             POP     {PC}                    // RETURN
