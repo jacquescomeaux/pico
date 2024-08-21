@@ -3,9 +3,10 @@
 .thumb
 
 .type putstr, %function
+.type putstrln, %function
 .type cmpstr, %function
 
-.global putstr, cmpstr
+.global putstr, putstrln, cmpstr
 
 putstr: LDR     R3, =0x40034000
         MOVS    R2, 0x20
@@ -19,6 +20,13 @@ putstr: LDR     R3, =0x40034000
         ADDS    R0, 1
         B       1b
 2:      BX      LR
+
+putstrln:
+        PUSH    {LR}
+        BL      putstr
+        LDR     R0, =crlf
+        BL      putstr
+        POP     {PC}
 
 cmpstr: MOVS    R4, 0
 1:      LDRB    R2, [R0, R4]

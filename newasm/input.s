@@ -7,7 +7,7 @@
 
 getline:
         PUSH    {R4, R5, LR}    // save registers
-        MOVS    R4, R0          // put strbuf in R4
+        MOVS    R4, R0          // copy buffer start address
 next:   BL      uart_recv       // get a char
         CMP     R0, 0x03        // end of text (^C)
         BEQ     cancel          // don't submit, start on next line
@@ -27,7 +27,7 @@ next:   BL      uart_recv       // get a char
         BHI     next
 good:   BL      uart_send       // echo the printable char
         STRB    R0, [R4, R5]    // write the printable char
-        ADDS    R5, 1           // increment strbuf offset
+        ADDS    R5, 1           // increment buffer offset
         B       next            // get another char
 cancel: MOVS    R5, 0           // reset offset
         STRB    R5, [R4, R5]    // write empty string
@@ -77,7 +77,7 @@ retry:  MOVS    R0, 0x08        // backspace
         SUBS    R2, 1           // decrement amount
         B       1b              // repeat
 2:      STRB    R2, [R4, R5]    // terminate string
-        MOVS    R0, R4          // copy strbuf address
+        MOVS    R0, R4          // copy buffer start address
         BL      putstr          // print backspace sequence
         MOVS    R5, 0           // null byte and reset offset
         STRB    R5, [R4]        // write empty string

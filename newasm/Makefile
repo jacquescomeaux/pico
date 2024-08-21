@@ -10,7 +10,8 @@ parse.he: parse.bin
 parse.bin: parse.elf
 	arm-none-eabi-objcopy -O binary parse.elf parse.bin
 
-objects = main.o uart.o data.o string.o input.o
+objects = main.o uart.o data.o string.o input.o \
+					statement.o whitespace.o label.o symbol.o opcode.o
 
 parse.elf: pico_bin.ld $(objects)
 	arm-none-eabi-ld -T pico_bin.ld -o parse.elf $(objects)
