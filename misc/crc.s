@@ -10,7 +10,7 @@
 CRC32:  LDR R5, =0x04C11DB7
         LDR R4, =0xFFFFFFFF
 10:     LDR R2, [R0]
-        REV R2, R2;
+        REV R2, R2
         EORS R4, R2
         MOVS R3, 32
 20:     LSLS R4, 1
