@@ -8,6 +8,7 @@
 getline:
         PUSH    {R4, R5, LR}    // save registers
         MOVS    R4, R0          // copy buffer start address
+        MOVS    R5, 0           // beginning offset
 next:   BL      uart_recv       // get a char
         CMP     R0, 0x03        // end of text (^C)
         BEQ     cancel          // don't submit, start on next line

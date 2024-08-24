@@ -11,7 +11,13 @@ parse.bin: parse.elf
 	arm-none-eabi-objcopy -O binary parse.elf parse.bin
 
 objects = main.o uart.o data.o string.o input.o \
-					statement.o whitespace.o label.o symbol.o opcode.o
+					statement.o optable.o \
+					parsers/whitespace.o \
+					parsers/label.o \
+					parsers/symbol.o \
+					parsers/opcode.o \
+					parsers/register.o \
+					parsers/decimal.o
 
 parse.elf: pico_bin.ld $(objects)
 	arm-none-eabi-ld -T pico_bin.ld -o parse.elf $(objects)

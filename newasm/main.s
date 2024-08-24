@@ -5,33 +5,34 @@
 .type main, %function
 .global main, strbuf
 
-main:     LDR     R4, =0x20002000
+main:     LDR     R5, =0x20002000
           BL      uart_recv
 loop:     BL      prompt
           LDR     R0, inpbuf
           BL      getline
           LDR     R0, inpbuf
           BL      putstrln
-          LDR     R1, inpbuf
+          LDR     R4, inpbuf
           LDR     R2, strbuf
           MOVS    R0, 0
           STRB    R0, [R2]
           BL      statement
           BNE     bad
+
 good:     ADR     R0, success
           PUSH    {R1}
           BL      putstrln
+          MOVS    R0, R4
+          BL      putstrln
           POP     {R0}
-          BL      putstrln
-          LDR     R0, strbuf
-          BL      putstrln
+          BL      send_hex
+          LDR     R0, =crlf
+          BL      putstr
           B       loop
+
 bad:      ADR     R0, fail
-          PUSH    {R1}
           BL      putstrln
-          POP     {R0}
-          BL      putstrln
-          LDR     R0, strbuf
+          MOVS    R0, R4
           BL      putstrln
           B       loop
 never:    BL      uart_recv
@@ -39,11 +40,11 @@ never:    BL      uart_recv
           BX      R0
 
 prompt:   PUSH    {LR}
-          MOVS    R0, R4
+          MOVS    R0, R5
           BL      send_hex
           MOVS    R0, ' 
           BL      uart_send
-          LDR     R0, [R4]
+          LDR     R0, [R5]
           BL      send_hex
           MOVS    R0, ' 
           BL      uart_send

@@ -28,7 +28,8 @@ putstrln:
         BL      putstr
         POP     {PC}
 
-cmpstr: MOVS    R4, 0
+cmpstr: PUSH    {R4}
+        MOVS    R4, 0
 1:      LDRB    R2, [R0, R4]
         LDRB    R3, [R1, R4]
         CMP     R2, R3
@@ -37,4 +38,5 @@ cmpstr: MOVS    R4, 0
         BEQ     2f
         ADDS    R4, 1
         B       1b
-2:      BX      LR
+2:      POP     {R4}
+        BX      LR
