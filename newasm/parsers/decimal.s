@@ -5,8 +5,6 @@
 .type decimal, %function
 .global decimal
 
-// 1 not a digit
-
 // R4 input stream
 // R2 output value
 
@@ -35,5 +33,5 @@ loop:     LDRB    R0, [R4]    // get another char
           MULS    R2, R3      // shift result by one decimal place
           ADDS    R2, R0      // accumulate into R2
           B       loop        // keep getting digits
-bad:      MOVS    R0, #1      // return code 1 (not a digit)
+bad:      MOVS    R0, #5      // return code 5 (not a digit)
           BX      LR

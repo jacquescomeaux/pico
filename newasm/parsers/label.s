@@ -5,9 +5,6 @@
 .type label, %function
 .global label
 
-// 1 unexpected begin char
-// 2 doesn't end with colon
-
 // R4 input buffer
 // R2 output buffer
 
@@ -23,7 +20,7 @@ label:    PUSH    {LR}
           LDRB    R0, [R4]    // get a char
           CMP     R0, ':      // colon
           BEQ     3f
-          MOVS    R0, #2      // return code 2 (expected colon)
+          MOVS    R0, #3      // return code 3 (expected colon)
           POP     {PC}
 3:        ADDS    R4, 1       // consume the colon
           MOVS    R0, #0      // return code 0 (success)

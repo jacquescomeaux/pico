@@ -5,9 +5,6 @@
 .type lookup, %function
 .global lookup
 
-// 1 unexpected char
-// 2 unexpected end of input
-
 // input:
 // R0 input string (unboxed)
 
@@ -25,7 +22,7 @@ loop:     CMP     R5, R6      // if begin == end then range = 0
           BEQ     error
           ADDS    R2, R5, R6  // get sum
           LSRS    R2, 1       // divide by two
-no_jiggle:LSLS    R3, R2, 3   // times 8 (index to offset)
+          LSLS    R3, R2, 3   // times 8 (index to offset)
           LDR     R1, [R4, R3]// read opcode from optable
           CMP     R0, R1      // compare opcode to input
           BLO     lower       // if lower
@@ -42,7 +39,7 @@ lower:    MOVS    R6, R2      // update end pointer
           B       loop
 higher:   ADDS    R5, R2, 1   // update begin pointer
           B     loop
-error:    MOVS    R0, 1       // return code 1 (not found)
+error:    MOVS    R0, 4       // return code 4 (opcode not found)
           POP     {R4, R5, R6}
           BX      LR
 
@@ -53,5 +50,5 @@ op_table:
           .ascii  "ASPI"; .hword 0xB000;  .byte 0x04, 0x07  // instr type 4, special code 7
           .ascii  "ASRI"; .hword 0x1000;  .byte 0x01, 0x05  // instr type 1, special code 5 (imm width)
           .ascii  "ADCS"; .hword 0x4140;  .byte 0x00, 0x00  // instr type 0, special code 0
-          .ascii  "ADDS"; .hword 0x1400;  .byte 0x03, 0x00  // instr type 3, special code 0
+          .ascii  "ADDS"; .hword 0x1800;  .byte 0x03, 0x00  // instr type 3, special code 0
           .ascii  "BKPT"; .hword 0xBE00;  .byte 0x04, 0x08  // instr type 4, special code 8
